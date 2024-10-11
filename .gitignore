@@ -4,3 +4,4 @@ bin
 *.txt
 Cargo.lock
 dockerfile
+hits/*
