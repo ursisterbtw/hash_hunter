@@ -1,0 +1,6 @@
+.env
+target
+bin
+*.txt
+Cargo.lock
+dockerfile

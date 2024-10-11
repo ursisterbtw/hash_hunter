@@ -1,0 +1,7 @@
+version: '3'
+services:
+  gigavain:
+    build: .
+    command: gigavain --start_pattern 0x69 --end_pattern 6969 --checksum true --step 100000 --log_interval 1000
+    volumes:
+      - ./new_addy.txt:/new_addy.txt
