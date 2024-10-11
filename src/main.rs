@@ -201,7 +201,7 @@ fn main() {
             );
         }
 
-        // Create a filename based on the public key
+        // create a filename based on the public key
         let filename = format!("{}.txt", result.address);
 
         // write to file
