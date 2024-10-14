@@ -14,7 +14,7 @@ use std::time::{Duration, Instant};
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// prefix of the eth address
-    #[arg(short = 'p', long, default_value = "")]
+    #[arg(short = 'p', long, default_value = "69")]
     start_pattern: String,
 
     /// suffix of the eth address
@@ -22,7 +22,7 @@ struct Args {
     end_pattern: String,
 
     /// enable EIP-55 checksum
-    #[arg(short = 'c', long)]
+    #[arg(short = 'c', long, default_value_t = true)]
     checksum: bool,
 
     /// # of attempts between progress logs
@@ -56,7 +56,7 @@ fn main() {
     let max_tries = args.max_tries;
     let log_interval = args.log_interval;
 
-    println!("Starting Vanity Address Generator 🚀");
+    println!("Starting Vanity Address Generator 🧪");
     println!("Prefix: {}", args.start_pattern.bright_green());
     println!("Suffix: {}", args.end_pattern.bright_green());
     println!(
@@ -186,7 +186,7 @@ fn main() {
 
     // check if a result was found
     if let Some(result) = result_map.get("result") {
-        println!("\n{}", "🎈 Address found!🎈".bright_green().bold());
+        println!("\n{}", "⛓️‍💥 Address found!⛓️‍💥".bright_green().bold());
         println!("Address: {}", result.address.bright_green());
         println!("Private Key: {}", result.priv_key.yellow());
         println!("Total attempts: {}", result.attempts.to_string().cyan());
