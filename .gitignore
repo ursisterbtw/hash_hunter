@@ -2,12 +2,19 @@
 .env
 *.txt
 *.json
+*.c
+*.cpp
+*.o
+*.pyd
+*.def
 Cargo.lock
 dockerfile
 ascii.gen
-# Temp Files
-wallet_scoring.py
 # Dirs
 target
 bin
 gen/*
+keepers
+build
+# Temp Ignore
+wallet_scoring.py

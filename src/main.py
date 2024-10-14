@@ -7,7 +7,8 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from collections import defaultdict
-from random import SystemRandom
+from eth_account import Account
+import os
 
 # Constants
 PATTERN_FOUR_ZEROS = r"^0x[0-9a-fA-F]{4}0000[0-9a-fA-F]{36}$"
@@ -19,8 +20,10 @@ PATTERN_REPEATED_BYTE = r"^0x[0-9a-fA-F]*([0-9a-fA-F]{2})/1{3}[0-9a-fA-F]*$"
 PATTERN_BINARY = r"^0x[0-9a-fA-F]*(10){4}[0-9a-fA-F]*$"
 PATTERN_HEXSPEAK = r"^0x[0-9a-fA-F]*(DEADBEEF|BADDCAFE|1337BEEF)[0-9a-fA-F]*$"
 
-START_PATTERN = "6969"
+START_PATTERN = ""
 END_PATTERN = "6969"
+
+os.makedirs("gen", exist_ok=True)
 
 
 def parse_args():
@@ -100,15 +103,13 @@ def main():
     end_pattern = args.end_pattern.lower()
     use_checksum = args.checksum
     step = args.step
-    max_tries = args.max_tries
     log_interval = args.log_interval
 
     logger.info("Starting Vanity Address Generator 🚀")
-    logger.info(f"Prefix: {START_PATTERN}")
-    logger.info(f"Suffix: {END_PATTERN}")
+    logger.info(f"Prefix: {start_pattern}")
+    logger.info(f"Suffix: {end_pattern}")
     logger.info(f"Checksum: {'✅' if use_checksum else '❌'}")
     logger.info(f"Step: {step}")
-    logger.info(f"Max Tries: {max_tries}")
     logger.info(f"Log Interval (ms): {log_interval}")
 
     found = threading.Event()
@@ -136,20 +137,17 @@ def main():
 
     def generate_address():
         nonlocal total_attempts
-        rng = SystemRandom()
 
-        while not found.is_set() and total_attempts < max_tries:
-            # simulate key generation
-            secret_key = rng.getrandbits(256)
-            public_key = rng.getrandbits(512)  # placeholder for actual public key
-            address = hashlib.sha3_256(str(public_key).encode("utf-8")).hexdigest()[
-                -40:
-            ]
+        while not found.is_set():
+            # Generate a new Ethereum account
+            account = Account.create()
+            private_key = account._private_key.hex()
+            address = account.address
 
             if use_checksum:
                 final_address = to_checksum_address(address)
             else:
-                final_address = address
+                final_address = address.lower()
 
             for pattern, color in compiled_patterns:
                 if pattern.match(final_address):
@@ -158,26 +156,47 @@ def main():
                     )
                     break
 
-            matches_custom = final_address.startswith(
-                start_pattern
-            ) and final_address.endswith(end_pattern)
+            matches_custom = final_address.lower().startswith(
+                f"0x{start_pattern}"
+            ) and final_address.lower().endswith(end_pattern)
 
-            if matches_custom or is_palindrome(final_address[:12]):
-                priv_key_hex = hex(secret_key)[2:]
-                rarity_score = calculate_rarity_score(final_address)
+            if matches_custom or is_palindrome(
+                final_address[2:14]
+            ):  # Check palindrome without '0x'
+                rarity_score = calculate_rarity_score(
+                    final_address[2:]
+                )  # Calculate rarity without '0x'
                 logger.success("\n🎉 New wallet found!")
                 logger.success(f"Address: {final_address}")
-                logger.success(f"Private Key: {priv_key_hex}")
+                logger.success(f"Private Key: {private_key}")
                 logger.success(f"Attempts: {total_attempts}")
                 logger.success(f"Rarity Score: {rarity_score:.4f} (lower is rarer)")
+
+                # save wallet info to file
+                filename = f"gen/{final_address}.txt"
+                with open(filename, "w") as f:
+                    f.write(f"Address: {final_address}\n")
+                    f.write(f"Private Key: {private_key}\n")
+                    f.write(f"Attempts: {total_attempts}\n")
+                    f.write(f"Rarity Score: {rarity_score:.4f}\n")
+
+                logger.success(f"Wallet information saved to {filename}")
+
                 found.set()
                 break
 
             total_attempts += 1
 
     with ThreadPoolExecutor() as executor:
-        for _ in range(4):  # adjust the number of threads as needed
-            executor.submit(generate_address)
+        futures = [executor.submit(generate_address) for _ in range(10)]
+
+        try:
+            # Wait for any of the futures to complete (which will never happen unless a match is found)
+            for future in futures:
+                future.result()
+        except KeyboardInterrupt:
+            logger.info("Keyboard interrupt received. Stopping the generator.")
+            found.set()
 
 
 if __name__ == "__main__":

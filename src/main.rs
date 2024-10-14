@@ -22,7 +22,7 @@ struct Args {
     end_pattern: String,
 
     /// enable EIP-55 checksum
-    #[arg(short = 'c', long, default_value_t = true)]
+    #[arg(short = 'c', long)]
     checksum: bool,
 
     /// # of attempts between progress logs
@@ -253,7 +253,7 @@ fn print_startup_screen() {
     );
     println!(
         "{}",
-        "║                 hash_hunter addy generator                     ║".bright_cyan()
+        "║                 hash_hunter addy generator                    ║".bright_cyan()
     );
     println!(
         "{}",
