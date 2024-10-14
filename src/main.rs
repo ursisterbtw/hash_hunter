@@ -16,11 +16,11 @@ use std::time::{Duration, Instant};
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// prefix of the eth address
-    #[arg(short = 'p', long, default_value = "69")]
+    #[arg(short = 'p', long, default_value = "0000000")]
     start_pattern: String,
 
     /// suffix of the eth address
-    #[arg(short = 'e', long, default_value = "69696969")]
+    #[arg(short = 'e', long, default_value = "")]
     end_pattern: String,
 
     /// enable EIP-55 checksum
