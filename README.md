@@ -7,5 +7,5 @@ Preliminary setup finished, python/rust working but cython not fully integrated 
 ## Usage
 
 ```wsl
-cargo run -- -p 6969 -e 6969 -c -s 100000 -m 10000000000 -i 10000
+cargo run --release
 ```
