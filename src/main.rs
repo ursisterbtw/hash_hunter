@@ -16,7 +16,7 @@ use std::time::{Duration, Instant};
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// prefix of the eth address
-    #[arg(short = 'p', long, default_value = "0000000000")]
+    #[arg(short = 'p', long, default_value = "")]
     start_pattern: String,
 
     /// suffix of the eth address
@@ -38,6 +38,10 @@ struct Args {
     /// logging interval in ms
     #[arg(short = 'i', long, default_value_t = 10_000)]
     log_interval: u64,
+
+    /// minimum number of zeros in the address
+    #[arg(short = 'z', long, default_value_t = 20)]
+    min_zeros: usize,
 }
 
 struct VanityResult {
@@ -57,6 +61,7 @@ fn main() {
     let step = args.step;
     let max_tries = args.max_tries;
     let log_interval = args.log_interval;
+    let min_zeros = args.min_zeros;
 
     // add a confirmation prompt
     if !confirm_start(&args) {
@@ -75,6 +80,7 @@ fn main() {
             "❌".red()
         }
     );
+    println!("Minimum Zeros: {}", min_zeros.to_string().yellow());
     println!("Step: {}", step.to_string().yellow());
     println!("Max Tries: {}", max_tries.to_string().yellow());
     println!("Log Interval (ms): {}", log_interval.to_string().yellow());
@@ -116,6 +122,7 @@ fn main() {
             let found = Arc::clone(&found);
             let result_map = Arc::clone(&result_map);
             let total_attempts = Arc::clone(&total_attempts);
+            let min_zeros = min_zeros;
 
             s.spawn(move |_| {
                 let secp = Secp256k1::new();
@@ -146,9 +153,11 @@ fn main() {
                         address.clone()
                     };
 
-                    // check prefix and suffix
+                    // check prefix, suffix, and minimum zeros
+                    let zero_count = final_address.matches('0').count();
                     if final_address.starts_with(&start_pattern)
                         && final_address.ends_with(&end_pattern)
+                        && zero_count >= min_zeros
                     {
                         // found a matching address
                         let address_with_prefix = format!("0x{}", final_address);

@@ -14,4 +14,8 @@ Cuidado loco!
 cargo run --release
 ```
 
+```wsl
+cargo run --release -- --start-pattern 123 --end-pattern abc --min-zeros 5
+```
+
 ### THIS PROJECT IS A WORK IN PROGRESS, DON'T EVER USE THE KEYS PRODUCED BY IT IN PRODUCTION OR ON MAINNET
