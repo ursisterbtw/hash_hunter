@@ -1,10 +1,12 @@
 use clap::Parser;
 use colored::*;
 use dashmap::DashMap;
+use indicatif::{ProgressBar, ProgressStyle};
 use num_cpus;
 use rand::rngs::OsRng;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
 use sha3::{Digest, Keccak256};
+use std::io::{self, Write};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -30,11 +32,11 @@ struct Args {
     step: u64,
 
     /// max # of attempts
-    #[arg(short = 'm', long, default_value_t = 5_000_000_000_000_000)]
+    #[arg(short = 'm', long, default_value_t = 5_000_000_000_000)]
     max_tries: u64,
 
     /// logging interval in ms
-    #[arg(short = 'i', long, default_value_t = 5_000)]
+    #[arg(short = 'i', long, default_value_t = 10_000)]
     log_interval: u64,
 }
 
@@ -55,6 +57,12 @@ fn main() {
     let step = args.step;
     let max_tries = args.max_tries;
     let log_interval = args.log_interval;
+
+    // add a confirmation prompt
+    if !confirm_start(&args) {
+        println!("Operation cancelled by user.");
+        return;
+    }
 
     println!("Starting Vanity Address Generator 🧪");
     println!("Prefix: {}", args.start_pattern.bright_green());
@@ -78,18 +86,18 @@ fn main() {
 
     let start_time = Instant::now();
 
+    let progress_bar = Arc::new(setup_progress_bar(max_tries));
+
     // start logs
     {
         let total_attempts = Arc::clone(&total_attempts);
         let found = Arc::clone(&found);
+        let progress_bar = Arc::clone(&progress_bar);
         std::thread::spawn(move || {
             while !found.load(Ordering::Relaxed) {
                 std::thread::sleep(Duration::from_millis(log_interval));
                 let attempts = total_attempts.get("attempts").map(|a| *a).unwrap_or(0);
-                println!(
-                    "Total checked addresses: {} 🔍",
-                    attempts.to_string().cyan()
-                );
+                progress_bar.set_position(attempts);
             }
         });
     }
@@ -181,8 +189,13 @@ fn main() {
         }
     });
 
-    // Create 'gen' directory if it doesn't exist
+    // create 'gen' directory if it doesn't exist
     std::fs::create_dir_all("gen").expect("Failed to create 'gen' directory");
+
+    // update progress bar one last time
+    let final_attempts = total_attempts.get("attempts").map(|a| *a).unwrap_or(0);
+    progress_bar.set_position(final_attempts);
+    progress_bar.finish_with_message("Search completed");
 
     // check if a result was found
     if let Some(result) = result_map.get("result") {
@@ -225,6 +238,9 @@ fn main() {
             )
             .bright_blue()
         );
+
+        // add entropy estimation
+        print_entropy_estimation(&result.address);
     } else {
         println!(
             "{}",
@@ -253,7 +269,7 @@ fn print_startup_screen() {
     );
     println!(
         "{}",
-        "║                 hash_hunter addy generator                    ║".bright_cyan()
+        "║           hash_hunter addy generator from ursister            ║".bright_cyan()
     );
     println!(
         "{}",
@@ -303,4 +319,42 @@ fn to_checksum_address(address: &str) -> String {
     }
     // ggez
     checksum_address
+}
+
+fn confirm_start(_args: &Args) -> bool {
+    println!("\nAre you sure you want to start with these parameters? (y/n)");
+    print!(">>> ");
+    io::stdout().flush().unwrap();
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    input.trim().to_lowercase() == "y"
+}
+
+fn setup_progress_bar(max_tries: u64) -> ProgressBar {
+    let pb = ProgressBar::new(max_tries);
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template(
+                "{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {pos}/{len} ({eta})",
+            )
+            .unwrap()
+            .progress_chars("#>-"),
+    );
+    pb
+}
+
+fn print_entropy_estimation(address: &str) {
+    let address_without_prefix = address.trim_start_matches("0x");
+    let entropy_bits = address_without_prefix.len() * 4; // each hex character represents 4 bits
+    println!("Estimated entropy: {} bits", entropy_bits);
+
+    let years_to_crack = calculate_years_to_crack(entropy_bits);
+    println!("Estimated time to crack: {:.2e} years", years_to_crack);
+}
+
+fn calculate_years_to_crack(entropy_bits: usize) -> f64 {
+    let guesses_per_second = 1e12; // assume 1 trillion guesses per second
+    let seconds_to_crack = 2f64.powi(entropy_bits as i32) / guesses_per_second;
+    seconds_to_crack / (365.25 * 24.0 * 60.0 * 60.0)
 }
