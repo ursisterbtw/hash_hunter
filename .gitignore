@@ -10,11 +10,13 @@
 Cargo.lock
 dockerfile
 ascii.gen
+cmd.md
 # Dirs
 target
 bin
 gen/*
 keepers
 build
+app
 # Temp Ignore
 wallet_scoring.py
