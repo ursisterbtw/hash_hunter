@@ -20,7 +20,7 @@ PATTERN_REPEATED_BYTE = r"^0x[0-9a-fA-F]*([0-9a-fA-F]{2})/1{3}[0-9a-fA-F]*$"
 PATTERN_BINARY = r"^0x[0-9a-fA-F]*(10){4}[0-9a-fA-F]*$"
 PATTERN_HEXSPEAK = r"^0x[0-9a-fA-F]*(DEADBEEF|BADDCAFE|1337BEEF)[0-9a-fA-F]*$"
 
-START_PATTERN = ""
+START_PATTERN = "6969"
 END_PATTERN = "6969"
 
 os.makedirs("gen", exist_ok=True)
