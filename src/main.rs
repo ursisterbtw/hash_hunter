@@ -9,16 +9,16 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-/// eth addy gen in Rust
+/// eth addy gen in rust
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// prefix of the eth address
-    #[arg(short = 'p', long, default_value = "0x69")]
+    #[arg(short = 'p', long, default_value = "6969")]
     start_pattern: String,
 
     /// suffix of the eth address
-    #[arg(short = 'e', long, default_value = "69")]
+    #[arg(short = 'e', long, default_value = "6969")]
     end_pattern: String,
 
     /// enable EIP-55 checksum
@@ -181,9 +181,12 @@ fn main() {
         }
     });
 
+    // Create 'gen' directory if it doesn't exist
+    std::fs::create_dir_all("gen").expect("Failed to create 'gen' directory");
+
     // check if a result was found
     if let Some(result) = result_map.get("result") {
-        println!("\n{}", "🎈 Address found! 🎈".bright_green().bold());
+        println!("\n{}", "🎈 Address found!🎈".bright_green().bold());
         println!("Address: {}", result.address.bright_green());
         println!("Private Key: {}", result.priv_key.yellow());
         println!("Total attempts: {}", result.attempts.to_string().cyan());
@@ -202,7 +205,7 @@ fn main() {
         }
 
         // create a filename based on the public key
-        let filename = format!("{}.txt", result.address);
+        let filename = format!("gen/{}.txt", result.address);
 
         // write to file
         std::fs::write(
@@ -250,7 +253,7 @@ fn print_startup_screen() {
     );
     println!(
         "{}",
-        "║                 good_looks addy generator                     ║".bright_cyan()
+        "║                 hash_hunter addy generator                     ║".bright_cyan()
     );
     println!(
         "{}",

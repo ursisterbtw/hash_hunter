@@ -1,7 +1,13 @@
+# Files
 .env
-target
-bin
 *.txt
+*.json
 Cargo.lock
 dockerfile
-hits/*
+ascii.gen
+# Temp Files
+wallet_scoring.py
+# Dirs
+target
+bin
+gen/*

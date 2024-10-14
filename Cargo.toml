@@ -1,5 +1,5 @@
 [package]
-name = "_good_looks"
+name = "hash_hunter"
 version = "0.1.0"
 edition = "2021"
 
