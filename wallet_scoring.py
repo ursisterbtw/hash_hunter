@@ -10,17 +10,15 @@ def calculate_score(wallet_address):
     # remove '0x' prefix
     addr = wallet_address[2:]
 
-    # count the number of leading zeroes
+    # count total zeroes and leading zeroes
+    total_zeroes = addr.count("0")
     leading_zeroes = len(addr) - len(addr.lstrip("0"))
 
-    # count total zeroes
-    total_zeroes = addr.count("0")
-
-    # calculate score based on leading zero count
-    # a perfect score would have 40 leading zeroes (42 chars - 2 for '0x')
-    max_leading_zeroes = 40
-    score = (leading_zeroes / max_leading_zeroes) * 100
-    return score, leading_zeroes, total_zeroes
+    # calculate score based on total zero count
+    # a perfect score would have 41 zeroes (42 chars - 1 for '0x')
+    max_zeroes = 41
+    score = (total_zeroes / max_zeroes) * 100
+    return score, total_zeroes, leading_zeroes
 
 
 def plot_wallet_scores(wallets):
@@ -38,11 +36,11 @@ def plot_wallet_scores(wallets):
 
 def run_wallet_check():
     matched_wallets = []
-    gen_directory = "gen"
+    keepers_directory = "keepers"
 
-    for filename in os.listdir(gen_directory):
+    for filename in os.listdir(keepers_directory):
         if filename.endswith(".txt"):
-            file_path = os.path.join(gen_directory, filename)
+            file_path = os.path.join(keepers_directory, filename)
             try:
                 with open(file_path, "r", encoding="utf-8") as file:
                     content = file.read().strip()
@@ -52,19 +50,19 @@ def run_wallet_check():
                             wallet_address = line.split("Address:")[1].strip()
 
                             try:
-                                score, leading_zeroes, total_zeroes = calculate_score(
+                                score, total_zeroes, leading_zeroes = calculate_score(
                                     wallet_address
                                 )
 
-                                # only include wallets with at least one leading zero
-                                if leading_zeroes > 0:
-                                    print(
-                                        f"Wallet: {wallet_address}, Leading Zeroes: {leading_zeroes}, "
-                                        f"Total Zeroes: {total_zeroes}, Score: {score:.2f}%"
-                                    )
-                                    matched_wallets.append(
-                                        {"address": wallet_address, "score": score}
-                                    )
+                                print(
+                                    f"Wallet: {wallet_address}, "
+                                    f"Total Zeroes: {total_zeroes}, "
+                                    f"Leading Zeroes: {leading_zeroes}, "
+                                    f"Score: {score:.2f}%"
+                                )
+                                matched_wallets.append(
+                                    {"address": wallet_address, "score": score}
+                                )
                             except ValueError as e:
                                 print(f"Error processing address: {e}")
 
