@@ -21,7 +21,7 @@ struct Args {
     start_pattern: String,
 
     // suffix of the eth address
-    #[arg(short = 'e', long, default_value = "69")]
+    #[arg(short = 'e', long, default_value = "")]
     end_pattern: String,
 
     // enable EIP-55 checksum
@@ -45,7 +45,7 @@ struct Args {
     min_zeros: usize,
 
     // regex pattern to match in the address
-    #[arg(short = 'r', long, default_value = "DEADBEEF")]
+    #[arg(short = 'r', long, default_value = "C0FFEE")]
     regex_pattern: String,
 }
 
