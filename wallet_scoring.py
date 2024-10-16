@@ -1,4 +1,5 @@
 import os
+import json
 import matplotlib.pyplot as plt
 
 
@@ -39,19 +40,30 @@ def run_wallet_check():
     scores_directory = "scores"
 
     for filename in os.listdir(scores_directory):
-        if filename.endswith(".txt"):
+        if filename.endswith(".txt") or filename.endswith(".json"):
             file_path = os.path.join(scores_directory, filename)
             try:
                 with open(file_path, "r", encoding="utf-8") as file:
-                    content = file.read().strip()
-                    lines = content.split("\n")
-                    for line in lines:
-                        if line.startswith("Address:"):
-                            wallet_address = line.split("Address:")[1].strip()
+                    if filename.endswith(".json"):
+                        # Parse JSON file
+                        data = json.load(file)
+                        if isinstance(data, dict):
+                            wallet_addresses = [data.get("address")]
+                        elif isinstance(data, list):
+                            wallet_addresses = [item.get("address") for item in data if isinstance(item, dict)]
+                        else:
+                            print(f"Unexpected JSON structure in {filename}")
+                            continue
+                    else:
+                        # Parse TXT file
+                        content = file.read().strip()
+                        lines = content.split("\n")
+                        wallet_addresses = [line.split("Address:")[1].strip() for line in lines if line.startswith("Address:")]
 
+                    for wallet_address in wallet_addresses:
+                        if wallet_address:
                             try:
                                 score, total_zeroes, leading_zeroes = calculate_score(wallet_address)
-
                                 print(
                                     f"Wallet: {wallet_address}, "
                                     f"Total Zeroes: {total_zeroes}, "
@@ -62,8 +74,8 @@ def run_wallet_check():
                             except ValueError as e:
                                 print(f"Error processing address: {e}")
 
-            except UnicodeDecodeError:
-                print(f"Skipping file {filename} due to encoding issues")
+            except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                print(f"Error reading file {filename}: {e}")
 
     plot_wallet_scores(matched_wallets)
 
