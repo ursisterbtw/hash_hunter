@@ -11,7 +11,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-/// eth addy gen in rust
+/// eth addy gen in rust, zooms
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {

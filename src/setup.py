@@ -18,7 +18,7 @@ extensions = [
 ]
 
 setup(
-    name="VanityAddressGenerator",
+    name="hash_hunter",
     ext_modules=cythonize(extensions, language_level=3),
     zip_safe=False,
 )
