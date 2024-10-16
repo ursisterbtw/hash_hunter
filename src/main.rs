@@ -4,6 +4,7 @@ use dashmap::DashMap;
 use indicatif::{ProgressBar, ProgressStyle};
 use num_cpus;
 use rand::rngs::OsRng;
+use regex::Regex;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
 use sha3::{Digest, Keccak256};
 use std::io::{self, Write};
@@ -11,37 +12,41 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-/// eth addy gen in rust, zooms
+// eth addy gen in rust, zooms
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    /// prefix of the eth address
+    // prefix of the eth address
     #[arg(short = 'p', long, default_value = "")]
     start_pattern: String,
 
-    /// suffix of the eth address
-    #[arg(short = 'e', long, default_value = "")]
+    // suffix of the eth address
+    #[arg(short = 'e', long, default_value = "69")]
     end_pattern: String,
 
-    /// enable EIP-55 checksum
+    // enable EIP-55 checksum
     #[arg(short = 'c', long, default_value_t = true)]
     checksum: bool,
 
-    /// # of attempts between progress logs
+    // # of attempts between progress logs
     #[arg(short = 's', long, default_value_t = 50_000)]
     step: u64,
 
-    /// max # of attempts
-    #[arg(short = 'm', long, default_value_t = 5_000_000_000)]
+    // max # of attempts
+    #[arg(short = 'm', long, default_value_t = 1_000_000_000)]
     max_tries: u64,
 
-    /// logging interval in ms
+    // logging interval in ms
     #[arg(short = 'i', long, default_value_t = 10_000)]
     log_interval: u64,
 
-    /// minimum number of zeros in the address
-    #[arg(short = 'z', long, default_value_t = 20)]
+    // minimum number of zeros in the address
+    #[arg(short = 'z', long, default_value_t = 0)]
     min_zeros: usize,
+
+    // regex pattern to match in the address
+    #[arg(short = 'r', long, default_value = "DEADBEEF")]
+    regex_pattern: String,
 }
 
 struct VanityResult {
@@ -62,6 +67,14 @@ fn main() {
     let max_tries = args.max_tries;
     let log_interval = args.log_interval;
     let min_zeros = args.min_zeros;
+
+    let regex_pattern = if !args.regex_pattern.is_empty() {
+        Some(Arc::new(
+            Regex::new(&args.regex_pattern).expect("Invalid regex pattern"),
+        ))
+    } else {
+        None
+    };
 
     // add a confirmation prompt
     if !confirm_start(&args) {
@@ -84,6 +97,7 @@ fn main() {
     println!("Step: {}", step.to_string().yellow());
     println!("Max Tries: {}", max_tries.to_string().yellow());
     println!("Log Interval (ms): {}", log_interval.to_string().yellow());
+    println!("Regex Pattern: {}", args.regex_pattern.yellow());
 
     let found = Arc::new(AtomicBool::new(false));
     let result_map = Arc::new(DashMap::new());
@@ -123,6 +137,7 @@ fn main() {
             let result_map = Arc::clone(&result_map);
             let total_attempts = Arc::clone(&total_attempts);
             let min_zeros = min_zeros;
+            let regex_pattern = regex_pattern.clone(); // Clone the regex pattern for each thread
 
             s.spawn(move |_| {
                 let secp = Secp256k1::new();
@@ -153,11 +168,14 @@ fn main() {
                         address.clone()
                     };
 
-                    // check prefix, suffix, and minimum zeros
+                    // check prefix, suffix, minimum zeros, and regex pattern
                     let zero_count = final_address.matches('0').count();
                     if final_address.starts_with(&start_pattern)
                         && final_address.ends_with(&end_pattern)
                         && zero_count >= min_zeros
+                        && regex_pattern
+                            .as_ref()
+                            .map_or(true, |re| re.is_match(&final_address))
                     {
                         // found a matching address
                         let address_with_prefix = format!("0x{}", final_address);
@@ -208,7 +226,7 @@ fn main() {
 
     // check if a result was found
     if let Some(result) = result_map.get("result") {
-        println!("\n{}", "⛓️‍💥 Address found!⛓️‍💥".bright_green().bold());
+        println!("\n{}", "🌀 Address found!🌀".bright_green().bold());
         println!("Address: {}", result.address.bright_green());
         println!("Private Key: {}", result.priv_key.yellow());
         println!("Total attempts: {}", result.attempts.to_string().cyan());
@@ -227,15 +245,19 @@ fn main() {
         }
 
         // create a filename based on the public key
-        let filename = format!("gen/{}.txt", result.address);
+        let filename = format!("gen/{}.json", result.address);
+
+        // create a JSON object
+        let json_output = serde_json::json!({
+            "address": result.address,
+            "privateKey": result.priv_key,
+            "totalAttempts": result.attempts
+        });
 
         // write to file
         std::fs::write(
             &filename,
-            format!(
-                "Address: {}\nPrivate Key: {}\nTotal attempts: {}",
-                result.address, result.priv_key, result.attempts
-            ),
+            serde_json::to_string_pretty(&json_output).unwrap(),
         )
         .expect("Unable to write to file");
 
@@ -303,7 +325,7 @@ fn verify_address(address: &str, private_key: &str) -> bool {
     address.to_lowercase() == generated_address.to_lowercase()
 }
 
-/// converts an eth address to its EIP-55 checksummed version
+// converts an eth address to its EIP-55 checksummed version
 fn to_checksum_address(address: &str) -> String {
     let address = address.to_lowercase();
     let hash = Keccak256::digest(address.as_bytes());
