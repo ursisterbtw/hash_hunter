@@ -1,5 +1,6 @@
 # Files
 .env
+run.py
 *.txt
 *.json
 *.c
@@ -19,4 +20,5 @@ keepers
 scores
 build
 app
+__pycache__
 # Temp Ignore

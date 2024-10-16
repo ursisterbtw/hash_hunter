@@ -37,11 +37,11 @@ def plot_wallet_scores(wallets):
 
 def run_wallet_check():
     matched_wallets = []
-    scores_directory = "scores"
+    gen_directory = "gen"
 
-    for filename in os.listdir(scores_directory):
+    for filename in os.listdir(gen_directory):
         if filename.endswith(".txt") or filename.endswith(".json"):
-            file_path = os.path.join(scores_directory, filename)
+            file_path = os.path.join(gen_directory, filename)
             try:
                 with open(file_path, "r", encoding="utf-8") as file:
                     if filename.endswith(".json"):

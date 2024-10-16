@@ -226,7 +226,7 @@ fn main() {
 
     // check if a result was found
     if let Some(result) = result_map.get("result") {
-        println!("\n{}", "🌀 Address found!🌀".bright_green().bold());
+        println!("\n{}", "🌀 Address found! 🌀".bright_green().bold());
         println!("Address: {}", result.address.bright_green());
         println!("Private Key: {}", result.priv_key.yellow());
         println!("Total attempts: {}", result.attempts.to_string().cyan());
