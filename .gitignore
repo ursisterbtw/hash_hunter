@@ -16,6 +16,7 @@ target
 bin
 gen/*
 keepers
+scores
 build
 app
 # Temp Ignore

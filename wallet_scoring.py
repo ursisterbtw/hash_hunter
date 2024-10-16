@@ -36,11 +36,11 @@ def plot_wallet_scores(wallets):
 
 def run_wallet_check():
     matched_wallets = []
-    keepers_directory = "keepers"
+    scores_directory = "scores"
 
-    for filename in os.listdir(keepers_directory):
+    for filename in os.listdir(scores_directory):
         if filename.endswith(".txt"):
-            file_path = os.path.join(keepers_directory, filename)
+            file_path = os.path.join(scores_directory, filename)
             try:
                 with open(file_path, "r", encoding="utf-8") as file:
                     content = file.read().strip()
@@ -50,9 +50,7 @@ def run_wallet_check():
                             wallet_address = line.split("Address:")[1].strip()
 
                             try:
-                                score, total_zeroes, leading_zeroes = calculate_score(
-                                    wallet_address
-                                )
+                                score, total_zeroes, leading_zeroes = calculate_score(wallet_address)
 
                                 print(
                                     f"Wallet: {wallet_address}, "
@@ -60,9 +58,7 @@ def run_wallet_check():
                                     f"Leading Zeroes: {leading_zeroes}, "
                                     f"Score: {score:.2f}%"
                                 )
-                                matched_wallets.append(
-                                    {"address": wallet_address, "score": score}
-                                )
+                                matched_wallets.append({"address": wallet_address, "score": score})
                             except ValueError as e:
                                 print(f"Error processing address: {e}")
 
