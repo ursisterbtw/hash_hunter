@@ -33,11 +33,11 @@ struct Args {
     step: u64,
 
     // max # of attempts
-    #[arg(short = 'm', long, default_value_t = 1_000_000_000)]
+    #[arg(short = 'm', long, default_value_t = 2_500_000_000)]
     max_tries: u64,
 
     // logging interval in ms
-    #[arg(short = 'i', long, default_value_t = 10_000)]
+    #[arg(short = 'i', long, default_value_t = 15_000)]
     log_interval: u64,
 
     // minimum number of zeros in the address
