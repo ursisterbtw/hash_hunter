@@ -41,11 +41,11 @@ struct Args {
     log_interval: u64,
 
     // minimum number of zeros in the address
-    #[arg(short = 'z', long, default_value_t = 0)]
+    #[arg(short = 'z', long, default_value_t = 18)]
     min_zeros: usize,
 
     // regex pattern to match in the address
-    #[arg(short = 'r', long, default_value = "C0FFEE")]
+    #[arg(short = 'r', long, default_value = "")]
     regex_pattern: String,
 }
 
