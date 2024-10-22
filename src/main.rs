@@ -17,11 +17,11 @@ use std::time::{Duration, Instant};
 #[command(author, version, about, long_about = None)]
 struct Args {
     // prefix of the eth address
-    #[arg(short = 'p', long, default_value = "")]
+    #[arg(short = 'p', long, default_value = "69")]
     start_pattern: String,
 
     // suffix of the eth address
-    #[arg(short = 'e', long, default_value = "")]
+    #[arg(short = 'e', long, default_value = "69DEAD69")]
     end_pattern: String,
 
     // enable EIP-55 checksum
@@ -41,7 +41,7 @@ struct Args {
     log_interval: u64,
 
     // minimum number of zeros in the address
-    #[arg(short = 'z', long, default_value_t = 18)]
+    #[arg(short = 'z', long, default_value_t = 0)]
     min_zeros: usize,
 
     // regex pattern to match in the address
