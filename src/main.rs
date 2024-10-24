@@ -21,7 +21,7 @@ struct Args {
     start_pattern: String,
 
     // suffix of the eth address
-    #[arg(short = 'e', long, default_value = "69DEAD69")]
+    #[arg(short = 'e', long, default_value = "69696969")]
     end_pattern: String,
 
     // enable EIP-55 checksum
@@ -33,7 +33,7 @@ struct Args {
     step: u64,
 
     // max # of attempts
-    #[arg(short = 'm', long, default_value_t = 2_500_000_000)]
+    #[arg(short = 'm', long, default_value_t = 10_000_000_000)]
     max_tries: u64,
 
     // logging interval in ms
