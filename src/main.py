@@ -1,4 +1,3 @@
-from colorama import Fore
 from loguru import logger
 import argparse
 import hashlib

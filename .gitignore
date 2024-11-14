@@ -13,6 +13,7 @@ dockerfile
 ascii.gen
 cmd.md
 # Dirs
+.vscode
 target
 bin
 gen/*
@@ -21,4 +22,6 @@ scores
 build
 app
 __pycache__
+secrets
 # Temp Ignore
+
