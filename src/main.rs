@@ -48,6 +48,10 @@ struct Args {
     // regex pattern to match in the address
     #[arg(short = 'r', long, default_value = "")]
     regex_pattern: String,
+
+    // skip confirmation prompt for docker
+    #[arg(short = 'y', long, default_value_t = false)]
+    skip_confirmation: bool,
 }
 
 struct VanityResult {
@@ -115,10 +119,16 @@ fn main() {
         let found = Arc::clone(&found);
         let progress_bar = Arc::clone(&progress_bar);
         std::thread::spawn(move || {
+            let mut last_attempts = 0u64;
             while !found.load(Ordering::Relaxed) {
                 std::thread::sleep(Duration::from_millis(log_interval));
                 let attempts = total_attempts.get("attempts").map(|a| *a).unwrap_or(0);
                 progress_bar.set_position(attempts);
+
+                // Add rate calculation
+                let rate = (attempts - last_attempts) as f64 / (log_interval as f64 / 1000.0);
+                println!("Rate: {:.2} attempts/sec, Total: {}", rate, attempts);
+                last_attempts = attempts;
             }
         });
     }
@@ -385,7 +395,11 @@ fn to_checksum_address(address: &str) -> String {
     checksum_address
 }
 
-fn confirm_start(_args: &Args) -> bool {
+fn confirm_start(args: &Args) -> bool {
+    if args.skip_confirmation {
+        return true;
+    }
+
     println!("\nAre you sure you want to start with these parameters? (y/n)");
     print!(">>> ");
     io::stdout().flush().unwrap();

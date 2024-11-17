@@ -9,7 +9,6 @@ run.py
 *.pyd
 *.def
 Cargo.lock
-dockerfile
 ascii.gen
 cmd.md
 # Dirs
@@ -24,5 +23,10 @@ app
 __pycache__
 secrets
 data/
+
+*.db
+*.log
+**/gen/*.json
+.build-metrics.db
 # Temp Ignore
 
