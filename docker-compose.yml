@@ -2,18 +2,18 @@ services:
   hash_hunter:
     build: .
     volumes:
-      - hash_hunter_data:/usr/src/app/gen
-    command: -p 69 -e 69696969 -c -s 100000 -m 100000000000 -i 10000 -y
-    restart: unless-stopped
+      - hash_hunter_data:/usr/src/app/gen # volume to store the data
+    command: -p 69 -e 69696969 -c -s 100000 -m 100000000000 -i 10000 -y # command to run the container
+    restart: unless-stopped # restart the container unless it is stopped
     deploy:
       resources:
         limits:
-          cpus: '7.5'
-          memory: 8G
+          cpus: '12' # 12 cores
+          memory: 16G # 16GB RAM
     ulimits:
       nofile: 
-        soft: 65535
-        hard: 65535
+        soft: 65535 # soft cap number of open files
+        hard: 65535 # hard cap number of open files
 volumes:
   hash_hunter_data:
     driver: local
