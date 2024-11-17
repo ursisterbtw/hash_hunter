@@ -1,7 +1,6 @@
 mod config;
-use crate::configuration::*;
-
 use crate::config::Config;
+use bytes::BytesMut;
 use chrono::Utc;
 use clap::Parser;
 use colored::*;
@@ -11,7 +10,6 @@ use rand::rngs::OsRng;
 use regex::Regex;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
 use sha3::{Digest, Keccak256};
-use std::fs;
 use std::fs::OpenOptions;
 use std::io::{self, Write};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -68,42 +66,53 @@ struct VanityResult {
 fn main() {
     print_startup_screen();
 
-    // Load config first
-    let config = load_config();
+    // Load config first - rename the variable to cfg to avoid confusion with the module
+    let cfg = Config::load();
+    println!("Running {} v{}", cfg.app.name, cfg.app.version);
+    println!("{}", cfg.app.description);
+    println!("Warning: {}", cfg.app.warning);
+
+    if cfg.search.validation.verify_addresses {
+        println!("Address verification enabled");
+    }
+
+    let thread_count = match cfg.performance.threads.as_str() {
+        "auto" => num_cpus::get(),
+        count => count.parse().unwrap_or_else(|_| num_cpus::get()),
+    };
+    println!("Using {} threads", thread_count);
 
     // Use config values as defaults for Args
     let args = Args::parse();
 
     // Override args with config if provided
     let start_pattern = if args.start_pattern == "69" {
-        config.search.patterns.start.clone()
+        cfg.search.patterns.start.clone()
     } else {
         args.start_pattern.clone()
     };
     let end_pattern = if args.end_pattern == "69696969" {
-        config.search.patterns.end.clone()
+        cfg.search.patterns.end.clone()
     } else {
         args.end_pattern.clone()
     };
-    let use_checksum = args.checksum || config.search.validation.use_checksum;
-    let step = args.step.max(config.performance.step_size);
-    let max_tries = args.max_tries.max(config.performance.max_tries);
-    let log_interval = args.log_interval.max(config.performance.log_interval_ms);
-    let min_zeros = args
-        .min_zeros
-        .max(config.search.validation.min_zeros as usize);
+    let use_checksum = args.checksum || cfg.search.validation.use_checksum;
+    let step = args.step.max(cfg.performance.step_size);
+    let max_tries = args.max_tries.max(cfg.performance.max_tries);
+    let log_interval = args.log_interval.max(cfg.performance.log_interval_ms);
+    let min_zeros = args.min_zeros.max(cfg.search.validation.min_zeros);
     let regex_pattern = if !args.regex_pattern.is_empty() {
         Some(Arc::new(
             Regex::new(&args.regex_pattern).expect("Invalid regex pattern"),
         ))
-    } else if !config.search.patterns.regex.is_empty() {
+    } else if !cfg.search.patterns.regex.is_empty() {
         Some(Arc::new(
-            Regex::new(&config.search.patterns.regex).expect("Invalid regex pattern in config"),
+            Regex::new(&cfg.search.patterns.regex).expect("Invalid regex pattern in config"),
         ))
     } else {
         None
     };
-    let skip_confirmation = args.skip_confirmation || config.security.skip_confirmation;
+    let skip_confirmation = args.skip_confirmation || cfg.security.skip_confirmation;
 
     // add a confirmation prompt
     if !confirm_start(&Args {
@@ -185,58 +194,60 @@ fn main() {
                 let mut rng = OsRng;
                 let mut local_attempts = 0u64;
 
+                // Pre-allocate strings
+                let mut address = String::with_capacity(40);
+                let mut final_address = String::with_capacity(40);
+                let mut priv_key_hex = String::with_capacity(64);
+
                 while !found.load(Ordering::Relaxed)
                     && total_attempts.get("attempts").map_or(0, |a| *a) < max_tries
                 {
                     // key gen
                     let secret_key = SecretKey::new(&mut rng);
 
-                    // compute pubkey
+                    // compute pubkey and get last 20 bytes directly
                     let public_key = PublicKey::from_secret_key(&secp, &secret_key);
                     let serialized_pub = public_key.serialize_uncompressed();
-
-                    // compute the keccak-256 hash of the public key ( - first byte)
                     let hash = Keccak256::digest(&serialized_pub[1..]);
 
-                    // take last 20 bytes as address
-                    let address = hex::encode(&hash[12..]);
+                    // Reuse pre-allocated strings
+                    address.clear();
+                    address.push_str(&hex::encode(&hash[12..]));
 
-                    // apply checksum if enabled
-                    let final_address = if use_checksum {
-                        to_checksum_address(&address)
+                    final_address.clear();
+                    if use_checksum {
+                        to_checksum_address_into(&address, &mut final_address);
                     } else {
-                        address.clone()
-                    };
+                        final_address.push_str(&address);
+                    }
 
-                    // check prefix, suffix, minimum zeros, and regex pattern
-                    let zero_count = final_address.matches('0').count();
+                    // Check conditions
                     if final_address.starts_with(&start_pattern)
                         && final_address.ends_with(&end_pattern)
-                        && zero_count >= min_zeros
+                        && final_address.matches('0').count() >= min_zeros
                         && regex_pattern
                             .as_ref()
                             .map_or(true, |re| re.is_match(&final_address))
                     {
-                        // found a matching address
-                        let address_with_prefix = format!("0x{}", final_address);
-                        let priv_key_hex = hex::encode(secret_key.as_ref());
+                        // Found match - reuse priv_key string
+                        priv_key_hex.clear();
+                        let _ = hex::encode_to_slice(
+                            secret_key.as_ref(),
+                            &mut BytesMut::from(priv_key_hex.as_bytes()),
+                        );
 
-                        // insert the result
                         result_map.insert(
                             "result",
                             VanityResult {
-                                address: address_with_prefix.clone(),
+                                address: format!("0x{}", final_address),
                                 priv_key: priv_key_hex.clone(),
-                                attempts: total_attempts.get("attempts").map(|a| *a).unwrap_or(0),
+                                attempts: total_attempts.get("attempts").map_or(0, |a| *a),
                             },
                         );
-
-                        // signal other threads to stop
                         found.store(true, Ordering::Relaxed);
                         break;
                     }
 
-                    // increment counters
                     local_attempts += 1;
                     if local_attempts >= step {
                         total_attempts
@@ -246,7 +257,6 @@ fn main() {
                     }
                 }
 
-                // add remaining attempts
                 if local_attempts > 0 {
                     total_attempts
                         .entry("attempts")
@@ -302,14 +312,14 @@ fn main() {
         .expect("Unable to write to file");
 
         // Set file permissions to read/write for the owner only
-        #[cfg(unix)]
-        {
-            use std::fs::Permissions;
-            use std::os::unix::fs::PermissionsExt;
-
-            fs::set_permissions(&filename, Permissions::from_mode(0o600))
-                .expect("Failed to set file permissions");
-        }
+        //#[cfg(unix)]
+        //{
+        //    use std::fs::Permissions;
+        //    use std::os::unix::fs::PermissionsExt;
+        //
+        //    fs::set_permissions(&filename, Permissions::from_mode(0o600))
+        //        .expect("Failed to set file permissions");
+        //}
 
         println!(
             "{}",
@@ -402,9 +412,15 @@ fn print_startup_screen() {
 
 fn verify_address(address: &str, private_key: &str) -> bool {
     let secp = Secp256k1::new();
-    let secret_key = SecretKey::from_slice(&hex::decode(private_key).unwrap()).unwrap();
-    let public_key = PublicKey::from_secret_key(&secp, &secret_key);
+    let secret_key = match hex::decode(private_key) {
+        Ok(bytes) => match SecretKey::from_slice(&bytes) {
+            Ok(key) => key,
+            Err(_) => return false,
+        },
+        Err(_) => return false,
+    };
 
+    let public_key = PublicKey::from_secret_key(&secp, &secret_key);
     let serialized_pub = public_key.serialize_uncompressed();
     let hash = Keccak256::digest(&serialized_pub[1..]);
     let generated_address = format!("0x{}", hex::encode(&hash[12..]));
@@ -412,31 +428,34 @@ fn verify_address(address: &str, private_key: &str) -> bool {
     address.to_lowercase() == generated_address.to_lowercase()
 }
 
-// converts an eth address to its EIP-55 checksummed version
-fn to_checksum_address(address: &str) -> String {
-    let address = address.to_lowercase();
-    let hash = Keccak256::digest(address.as_bytes());
-    let mut checksum_address = String::with_capacity(40);
+fn _verify_checksum(checksum_address: &str) -> bool {
+    // First verify the checksum format if address has mixed case
+    if checksum_address.chars().any(|c| c.is_ascii_uppercase()) {
+        let address_without_prefix = &checksum_address[2..];
+        let mut message = [0u8; 32];
+        let mut keccak = Keccak256::new();
+        keccak.update(address_without_prefix.to_lowercase().as_bytes());
+        keccak.finalize_into((&mut message).into());
 
-    for (i, c) in address.chars().enumerate() {
-        if c.is_ascii_digit() {
-            checksum_address.push(c);
-        } else {
-            let hash_byte = hash[i / 2];
-            let nibble = if i % 2 == 0 {
-                hash_byte >> 4
-            } else {
-                hash_byte & 0x0F
-            };
-            if nibble >= 8 {
-                checksum_address.push(c.to_ascii_uppercase());
-            } else {
-                checksum_address.push(c);
+        let mut checksummed = String::with_capacity(42);
+        checksummed.push_str("0x");
+
+        for (i, ch) in address_without_prefix.chars().enumerate() {
+            let nibble = u8::from_str_radix(&message[i / 2].to_string(), 16).unwrap();
+            let should_be_uppercase = nibble & 0x8 == 0x8;
+
+            if ch.is_ascii_uppercase() != should_be_uppercase {
+                return false;
             }
+            checksummed.push(ch);
+        }
+
+        if checksummed != checksum_address {
+            return false;
         }
     }
-    // ggez
-    checksum_address
+
+    true
 }
 
 fn confirm_start(args: &Args) -> bool {
@@ -481,7 +500,24 @@ fn calculate_years_to_crack(entropy_bits: usize) -> f64 {
     seconds_to_crack / (365.25 * 24.0 * 60.0 * 60.0)
 }
 
-fn load_config() -> Config {
-    let config_content = fs::read_to_string("src/config.yml").expect("Failed to read config file");
-    serde_yaml::from_str(&config_content).expect("Failed to parse config")
+fn to_checksum_address_into(address: &str, out: &mut String) {
+    let hash = Keccak256::digest(address.as_bytes());
+
+    for (i, c) in address.chars().enumerate() {
+        if c.is_ascii_digit() {
+            out.push(c);
+        } else {
+            let hash_byte = hash[i / 2];
+            let nibble = if i % 2 == 0 {
+                hash_byte >> 4
+            } else {
+                hash_byte & 0x0F
+            };
+            if nibble >= 8 {
+                out.push(c.to_ascii_uppercase());
+            } else {
+                out.push(c);
+            }
+        }
+    }
 }

@@ -20,3 +20,5 @@ chrono = "0.4.38"
 config = "0.14"
 serde = { version = "1.0.215", features = ["derive"] }
 serde_yaml = "0.9.33"
+bytes = "1.8.0"
+checksum = "0.2.1"
