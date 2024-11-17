@@ -1,12 +1,13 @@
+use chrono::Utc;
 use clap::Parser;
 use colored::*;
 use dashmap::DashMap;
 use indicatif::{ProgressBar, ProgressStyle};
-use num_cpus;
 use rand::rngs::OsRng;
 use regex::Regex;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
 use sha3::{Digest, Keccak256};
+use std::fs::OpenOptions;
 use std::io::{self, Write};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
@@ -130,19 +131,14 @@ fn main() {
         for _ in 0..num_threads {
             let start_pattern = start_pattern.clone();
             let end_pattern = end_pattern.clone();
-            let use_checksum = use_checksum;
-            let step = step;
-            let max_tries = max_tries;
             let found = Arc::clone(&found);
             let result_map = Arc::clone(&result_map);
             let total_attempts = Arc::clone(&total_attempts);
-            let min_zeros = min_zeros;
             let regex_pattern = regex_pattern.clone(); // Clone the regex pattern for each thread
 
             s.spawn(move |_| {
                 let secp = Secp256k1::new();
                 let mut rng = OsRng;
-
                 let mut local_attempts = 0u64;
 
                 while !found.load(Ordering::Relaxed)
@@ -272,6 +268,43 @@ fn main() {
 
         // add entropy estimation
         print_entropy_estimation(&result.address);
+
+        let log_file = OpenOptions::new()
+            .append(true)
+            .create(true)
+            .open("gen/hunter.log")
+            .expect("Failed to open log file");
+
+        let mut log_writer = std::io::BufWriter::new(log_file);
+
+        // Log startup
+        writeln!(
+            log_writer,
+            "[{}] Starting hash_hunter with prefix: {}, suffix: {}",
+            Utc::now(),
+            start_pattern,
+            end_pattern
+        )
+        .expect("Failed to write to log");
+        log_writer.flush().expect("Failed to flush log");
+
+        // When a match is found, log it
+        writeln!(
+            log_writer,
+            "[{}] Found match! Address: {}, Attempts: {}",
+            Utc::now(),
+            result.address,
+            result.attempts
+        )
+        .expect("Failed to write to log");
+        log_writer.flush().expect("Failed to flush log");
+
+        // Create a success marker file
+        std::fs::write(
+            "gen/SUCCESS",
+            format!("Found address: {}\n", result.address),
+        )
+        .expect("Failed to write success marker");
     } else {
         println!(
             "{}",
@@ -332,7 +365,7 @@ fn to_checksum_address(address: &str) -> String {
     let mut checksum_address = String::with_capacity(40);
 
     for (i, c) in address.chars().enumerate() {
-        if c.is_digit(10) {
+        if c.is_ascii_digit() {
             checksum_address.push(c);
         } else {
             let hash_byte = hash[i / 2];

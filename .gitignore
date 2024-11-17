@@ -23,5 +23,6 @@ build
 app
 __pycache__
 secrets
+data/
 # Temp Ignore
 
