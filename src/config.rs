@@ -11,9 +11,17 @@ pub struct Config {
 
 impl Config {
     pub fn load() -> Self {
-        let config_content =
-            fs::read_to_string("src/config.yml").expect("Failed to read config file");
-        serde_yaml::from_str(&config_content).expect("Failed to parse config")
+        let config_paths = ["src/config.yml", "config.yml", "/usr/src/app/config.yml"];
+
+        for path in config_paths {
+            if let Ok(content) = fs::read_to_string(path) {
+                if let Ok(config) = serde_yaml::from_str(&content) {
+                    return config;
+                }
+            }
+        }
+
+        panic!("Could not find or parse config.yml in any of the expected locations");
     }
 }
 

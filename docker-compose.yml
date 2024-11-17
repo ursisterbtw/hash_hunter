@@ -1,21 +1,16 @@
-version: '3.8'
-
 services:
   hash_hunter:
-    image: hash_hunter:latest
-    build:
-      context: .
+    build: .
     volumes:
-      - ./gen:/usr/src/app/gen
-    command: hash_hunter -p 69 -e 69696969 -c -s 100000 -m 100000000000 -i 10000 -y
+      - hash_hunter_data:/usr/src/app/gen
+    command: -p 69 -e 69696969 -c -s 100000 -m 100000000000 -i 10000 -y
     restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: '7.5'
           memory: 8G
-    healthcheck:
-      test: ["CMD", "supervisorctl", "status", "hash_hunter"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+
+volumes:
+  hash_hunter_data:
+    driver: local
