@@ -1,4 +1,4 @@
-# hash_hunter
+# ☁️ hash_hunter ☁️
 
 `hash_hunter` is a simple Ethereum vanity address generator written in both Rust and Python. It is designed to be a proof of concept for generating Ethereum addresses with a specific prefix and suffix, as well as some other features.
 
