@@ -8,7 +8,6 @@ WORKDIR /usr/src/app
 
 # Install required runtime dependencies
 RUN apt-get update && apt-get install -y \
-    supervisor \
     && rm -rf /var/lib/apt/lists/*
 
 # Create necessary directories and copy config

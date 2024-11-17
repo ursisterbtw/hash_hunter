@@ -1,12 +1,12 @@
 mod config;
 use crate::config::Config;
-use bytes::BytesMut;
 use chrono::Utc;
 use clap::Parser;
 use colored::*;
 use dashmap::DashMap;
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::rngs::OsRng;
+use rayon::prelude::*;
 use regex::Regex;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
 use sha3::{Digest, Keccak256};
@@ -150,7 +150,7 @@ fn main() {
     let found = Arc::new(AtomicBool::new(false));
     let result_map = Arc::new(DashMap::new());
     let total_attempts = Arc::new(DashMap::new());
-    total_attempts.insert("attempts", 0u64);
+    total_attempts.insert("attempts".to_string(), 0u64);
 
     let start_time = Instant::now();
 
@@ -190,77 +190,18 @@ fn main() {
             let regex_pattern = regex_pattern.clone(); // Clone the regex pattern for each thread
 
             s.spawn(move |_| {
-                let secp = Secp256k1::new();
-                let mut rng = OsRng;
-                let mut local_attempts = 0u64;
+                let result = generate_addresses(
+                    start_pattern.clone(),
+                    end_pattern.clone(),
+                    use_checksum,
+                    min_zeros,
+                    regex_pattern,
+                    Arc::clone(&total_attempts),
+                );
 
-                // Pre-allocate strings
-                let mut address = String::with_capacity(40);
-                let mut final_address = String::with_capacity(40);
-                let mut priv_key_hex = String::with_capacity(64);
-
-                while !found.load(Ordering::Relaxed)
-                    && total_attempts.get("attempts").map_or(0, |a| *a) < max_tries
-                {
-                    // key gen
-                    let secret_key = SecretKey::new(&mut rng);
-
-                    // compute pubkey and get last 20 bytes directly
-                    let public_key = PublicKey::from_secret_key(&secp, &secret_key);
-                    let serialized_pub = public_key.serialize_uncompressed();
-                    let hash = Keccak256::digest(&serialized_pub[1..]);
-
-                    // Reuse pre-allocated strings
-                    address.clear();
-                    address.push_str(&hex::encode(&hash[12..]));
-
-                    final_address.clear();
-                    if use_checksum {
-                        to_checksum_address_into(&address, &mut final_address);
-                    } else {
-                        final_address.push_str(&address);
-                    }
-
-                    // Check conditions
-                    if final_address.starts_with(&start_pattern)
-                        && final_address.ends_with(&end_pattern)
-                        && final_address.matches('0').count() >= min_zeros
-                        && regex_pattern
-                            .as_ref()
-                            .map_or(true, |re| re.is_match(&final_address))
-                    {
-                        // Found match - reuse priv_key string
-                        priv_key_hex.clear();
-                        let _ = hex::encode_to_slice(
-                            secret_key.as_ref(),
-                            &mut BytesMut::from(priv_key_hex.as_bytes()),
-                        );
-
-                        result_map.insert(
-                            "result",
-                            VanityResult {
-                                address: format!("0x{}", final_address),
-                                priv_key: priv_key_hex.clone(),
-                                attempts: total_attempts.get("attempts").map_or(0, |a| *a),
-                            },
-                        );
-                        found.store(true, Ordering::Relaxed);
-                        break;
-                    }
-
-                    local_attempts += 1;
-                    if local_attempts >= step {
-                        total_attempts
-                            .entry("attempts")
-                            .and_modify(|a| *a += local_attempts);
-                        local_attempts = 0;
-                    }
-                }
-
-                if local_attempts > 0 {
-                    total_attempts
-                        .entry("attempts")
-                        .and_modify(|a| *a += local_attempts);
+                if let Some(result) = result {
+                    result_map.insert("result", result);
+                    found.store(true, Ordering::Relaxed);
                 }
             });
         }
@@ -518,6 +459,62 @@ fn to_checksum_address_into(address: &str, out: &mut String) {
             } else {
                 out.push(c);
             }
+        }
+    }
+}
+
+fn generate_addresses(
+    start_pattern: String,
+    end_pattern: String,
+    use_checksum: bool,
+    min_zeros: usize,
+    regex_pattern: Option<Arc<Regex>>,
+    total_attempts: Arc<DashMap<String, u64>>,
+) -> Option<VanityResult> {
+    let batch_size = 1_000_000;
+    let secp = Secp256k1::new();
+
+    loop {
+        if let Some(result) = (0..batch_size).into_par_iter().find_map_any(|_| {
+            let mut rng = OsRng;
+            let (secret_key, public_key) = secp.generate_keypair(&mut rng);
+
+            // Generate address
+            let serialized_pub = public_key.serialize_uncompressed();
+            let hash = Keccak256::digest(&serialized_pub[1..]);
+            let address = hex::encode(&hash[12..]);
+
+            let mut final_address = String::with_capacity(40);
+            if use_checksum {
+                to_checksum_address_into(&address, &mut final_address);
+            } else {
+                final_address.push_str(&address);
+            }
+
+            // Update attempts counter with String key instead of &str
+            total_attempts
+                .entry("attempts".to_string())
+                .and_modify(|e| *e += 1)
+                .or_insert(1);
+
+            // Check conditions
+            if final_address.starts_with(&start_pattern)
+                && final_address.ends_with(&end_pattern)
+                && final_address.matches('0').count() >= min_zeros
+                && regex_pattern
+                    .as_ref()
+                    .map_or(true, |re| re.is_match(&final_address))
+            {
+                Some(VanityResult {
+                    address: format!("0x{}", final_address),
+                    priv_key: hex::encode(secret_key.as_ref()),
+                    attempts: total_attempts.get("attempts").map_or(0, |a| *a),
+                })
+            } else {
+                None
+            }
+        }) {
+            return Some(result);
         }
     }
 }

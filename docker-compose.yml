@@ -10,7 +10,10 @@ services:
         limits:
           cpus: '7.5'
           memory: 8G
-
+    ulimits:
+      nofile: 
+        soft: 65535
+        hard: 65535
 volumes:
   hash_hunter_data:
     driver: local
