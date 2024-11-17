@@ -1,3 +1,7 @@
+mod config;
+use crate::configuration::*;
+
+use crate::config::Config;
 use chrono::Utc;
 use clap::Parser;
 use colored::*;
@@ -7,6 +11,7 @@ use rand::rngs::OsRng;
 use regex::Regex;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
 use sha3::{Digest, Keccak256};
+use std::fs;
 use std::fs::OpenOptions;
 use std::io::{self, Write};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -63,33 +68,62 @@ struct VanityResult {
 fn main() {
     print_startup_screen();
 
+    // Load config first
+    let config = load_config();
+
+    // Use config values as defaults for Args
     let args = Args::parse();
 
-    let start_pattern = args.start_pattern.to_lowercase();
-    let end_pattern = args.end_pattern.to_lowercase();
-    let use_checksum = args.checksum;
-    let step = args.step;
-    let max_tries = args.max_tries;
-    let log_interval = args.log_interval;
-    let min_zeros = args.min_zeros;
-
+    // Override args with config if provided
+    let start_pattern = if args.start_pattern == "69" {
+        config.search.patterns.start.clone()
+    } else {
+        args.start_pattern.clone()
+    };
+    let end_pattern = if args.end_pattern == "69696969" {
+        config.search.patterns.end.clone()
+    } else {
+        args.end_pattern.clone()
+    };
+    let use_checksum = args.checksum || config.search.validation.use_checksum;
+    let step = args.step.max(config.performance.step_size);
+    let max_tries = args.max_tries.max(config.performance.max_tries);
+    let log_interval = args.log_interval.max(config.performance.log_interval_ms);
+    let min_zeros = args
+        .min_zeros
+        .max(config.search.validation.min_zeros as usize);
     let regex_pattern = if !args.regex_pattern.is_empty() {
         Some(Arc::new(
             Regex::new(&args.regex_pattern).expect("Invalid regex pattern"),
         ))
+    } else if !config.search.patterns.regex.is_empty() {
+        Some(Arc::new(
+            Regex::new(&config.search.patterns.regex).expect("Invalid regex pattern in config"),
+        ))
     } else {
         None
     };
+    let skip_confirmation = args.skip_confirmation || config.security.skip_confirmation;
 
     // add a confirmation prompt
-    if !confirm_start(&args) {
+    if !confirm_start(&Args {
+        start_pattern: start_pattern.clone(),
+        end_pattern: end_pattern.clone(),
+        checksum: use_checksum,
+        step,
+        max_tries,
+        log_interval,
+        min_zeros,
+        regex_pattern: args.regex_pattern.clone(), // or use config pattern
+        skip_confirmation,
+    }) {
         println!("Operation cancelled by user.");
         return;
     }
 
     println!("Starting Vanity Address Generator 🧪");
-    println!("Prefix: {}", args.start_pattern.bright_green());
-    println!("Suffix: {}", args.end_pattern.bright_green());
+    println!("Prefix: {}", start_pattern.bright_green());
+    println!("Suffix: {}", end_pattern.bright_green());
     println!(
         "Checksum: {}",
         if use_checksum {
@@ -260,12 +294,22 @@ fn main() {
             "totalAttempts": result.attempts
         });
 
-        // write to file
+        // write to file with restricted permissions
         std::fs::write(
             &filename,
             serde_json::to_string_pretty(&json_output).unwrap(),
         )
         .expect("Unable to write to file");
+
+        // Set file permissions to read/write for the owner only
+        #[cfg(unix)]
+        {
+            use std::fs::Permissions;
+            use std::os::unix::fs::PermissionsExt;
+
+            fs::set_permissions(&filename, Permissions::from_mode(0o600))
+                .expect("Failed to set file permissions");
+        }
 
         println!(
             "{}",
@@ -435,4 +479,9 @@ fn calculate_years_to_crack(entropy_bits: usize) -> f64 {
     let guesses_per_second = 1e12; // assume 1 trillion guesses per second
     let seconds_to_crack = 2f64.powi(entropy_bits as i32) / guesses_per_second;
     seconds_to_crack / (365.25 * 24.0 * 60.0 * 60.0)
+}
+
+fn load_config() -> Config {
+    let config_content = fs::read_to_string("src/config.yml").expect("Failed to read config file");
+    serde_yaml::from_str(&config_content).expect("Failed to parse config")
 }

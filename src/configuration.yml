@@ -1,0 +1,62 @@
+# configuration
+version: "1.0"
+
+# app settings
+app:
+  name: "hash_hunter"
+  version: "0.1.0"
+  description: "Ethereum vanity address generator"
+  warning: "THIS IS A PROOF OF CONCEPT - DO NOT USE IN PRODUCTION"
+
+# search params
+search:
+  patterns:
+    start: "69"
+    end: "69696969"
+    regex: ""
+  validation:
+    use_checksum: true
+    min_zeros: 0
+    verify_addresses: true
+
+# performance settings
+performance:
+  step_size: 50000
+  max_tries: 10000000000
+  log_interval_ms: 15000
+  threads: "auto" # uses num_cpus::get()
+  resources:
+    cpu_limit: 7.5
+    memory_limit: "8G"
+
+# output settings
+output:
+  directory: "gen"
+  files:
+    log: "hunter.log"
+    success_marker: "SUCCESS"
+  progress_bar:
+    template: "{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {pos}/{len} ({eta})"
+    chars: "#>-"
+
+# docker settings
+docker:
+  base_image: "ubuntu:22.04"
+  builder_image: "rust:1.82"
+  platforms:
+    - "linux/amd64"
+    - "linux/arm64"
+  healthcheck:
+    interval: "30s"
+    timeout: "10s"
+    retries: 3
+  volumes:
+    - source: "./gen"
+      target: "/usr/src/app/gen"
+
+# security settings
+security:
+  skip_confirmation: false
+  entropy:
+    guesses_per_second: 1e12
+    min_bits: 160
