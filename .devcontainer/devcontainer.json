@@ -1,0 +1,87 @@
+{
+    "name": "Rust + Python Blockchain Dev Environment",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/rust:1": {
+            "version": "latest",
+            "profile": "minimal"
+        },
+        "ghcr.io/devcontainers/features/python:1": {
+            "installTools": true,
+            "optimized": true,
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "lts"
+        },
+        "ghcr.io/devcontainers/features/git:1": {
+            "version": "latest",
+            "ppa": true
+        },
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "rust-lang.rust-analyzer",
+                "serayuzgur.crates",
+                "vadimcn.vscode-lldb",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-toolsai.jupyter",
+                "JuanBlanco.solidity",
+                "tintinweb.solidity-visual-auditor",
+                "esbenp.prettier-vscode",
+                "GitHub.copilot",
+                "eamodio.gitlens",
+                "yzhang.markdown-all-in-one",
+                "ms-azuretools.vscode-docker",
+                "github.vscode-github-actions",
+                "mechatroner.rainbow-csv",
+                "IBM.output-colorizer",
+                "Zerotaskx.rust-extension-pack",
+                "njpwerner.autodocstring",
+                "EditorConfig.EditorConfig",
+                "ms-vscode-remote.remote-containers",
+                "tamasfe.even-better-toml",
+                "me-dutour-mathieu.vscode-github-actions",
+                "rintoj.json-organizer",
+                "ms-kubernetes-tools.vscode-kubernetes-tools",
+                "DavidAnson.vscode-markdownlint",
+                "donjayamanne.python-environment-manager",
+                "donjayamanne.python-extension-pack",
+                "charliermarsh.ruff",
+                "Gruntfuggly.todo-tree",
+                "slevesque.vscode-multiclip",
+                "ritwickdey.LiveServer",
+                "ms-python.isort",
+                "PeterSchmalfeldt.explorer-exclude",
+                "GitHub.vscode-pull-request-github"
+            ],
+            "settings": {
+                "editor.formatOnSave": true,
+                "python.linting.enabled": true,
+                "python.linting.ruffEnabled": true,
+                "python.formatting.provider": "ruff",
+                "rust-analyzer.checkOnSave.command": "clippy",
+                "rust-analyzer.cargo.allFeatures": true,
+                "rust-analyzer.procMacro.enable": true,
+                "rust-analyzer.inlayHints.enable": true
+            }
+        }
+    },
+    "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh && curl -LsSf https://astral.sh/ruff/install.sh | sh && uv pip install requests web3 pyyaml toml tomli rich pre-commit pytest pytest-asyncio pytest-mock networkx matplotlib community --system && pre-commit install",
+    "remoteUser": "vscode",
+    "hostRequirements": {
+        "memory": "16gb",
+        "cpus": 4
+    },
+    "privileged": true,
+    "runArgs": [
+        "--cap-add=SYS_PTRACE",
+        "--security-opt",
+        "seccomp=unconfined"
+    ]
+}
