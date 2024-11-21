@@ -16,8 +16,6 @@
 
 🦀 `main.rs` 🦀 is designed to max out cpu, 🐍 `main.py` 🐍 is a little more considerate.
 
-Setup finished, python/rust working as intended.
-
 If you're feeling froggy, I left some hints in /src that point towards a rather speedy Cython implementation ⏩
 
 Be careful!
