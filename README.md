@@ -1,4 +1,6 @@
+<div align="center">
 # ☁️ hash_hunter ☁️
+</div>
 
 <div align="center">
   <img src="./saturdaynight.gif" width="300" alt="saturdaynight">
