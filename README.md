@@ -3,24 +3,27 @@
   <img src="./saturdaynight.gif" width="300" alt="saturdaynight">
 </div>
 
-`hash_hunter` is an Ethereum vanity address generator written in both Rust and Python. It is designed to be a proof of concept for generating Ethereum addresses with a specific prefix and suffix, as well as some other features.
+`hash_hunter` is an Ethereum vanity address generator written in both Rust and Python. It is designed to be a proof of concept for generating Ethereum addresses with a specific prefix and suffix, as well as other patterns like palindromes, ascending/descending sequences, and hexspeak.
 
-🦀 `main.rs` 🦀 is designed to max out cpu, 🐍 `main.py` 🐍 is a little more considerate.
+## Features
 
-Setup finished, python/rust working as intended.
+- **Rust Implementation (`main.rs`)**:
+  - Maximize CPU utilization for faster address generation.
+  - Supports customizable patterns including prefix, suffix, and regex patterns.
+  - Provides options for enabling EIP-55 checksum and skipping confirmation prompts.
+  - Displays entropy estimation and years to crack for generated addresses.
 
-If you're feeling froggy, I left some hints in /src that point towards a rather speedy Cython implementation ⏩
-
-Be careful!
+- **Python Implementation (`main.py`)**:
+  - Utilizes multithreading for concurrent address generation.
+  - Matches addresses against predefined patterns (e.g., four zeros, triple digits, ascending/descending sequences).
+  - Calculates rarity scores for generated addresses.
+  - Saves wallet information to files upon finding a match.
 
 ## Usage
 
-```rust
+### Rust
+
+To run the Rust implementation:
+
+```bash
 cargo run --release
-```
-
-```rust
-cargo run --release -- --start-pattern 123 --end-pattern abc --min-zeros 5
-```
-
-## **THIS PROJECT IS A WORK IN PROGRESS, DON'T EVER USE THE KEYS PRODUCED BY IT IN PRODUCTION OR ON MAINNET**
