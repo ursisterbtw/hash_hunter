@@ -72,7 +72,7 @@
             }
         }
     },
-    "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh && curl -LsSf https://astral.sh/ruff/install.sh | sh && uv pip install requests web3 pyyaml toml tomli rich pre-commit pytest pytest-asyncio pytest-mock networkx matplotlib community --system && pre-commit install",
+    "postCreateCommand": "cargo build --release && cargo run --release",
     "remoteUser": "vscode",
     "hostRequirements": {
         "memory": "16gb",
