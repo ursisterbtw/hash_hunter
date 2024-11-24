@@ -1,7 +1,6 @@
 <div align="center">
   <h1>☁️ hash_hunter ☁️</h1>
   <img src="./saturdaynight.gif" width="300" alt="saturdaynight">
-  ----
 <!-- Status badges -->
 <p align="center">
   <a href="https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust-clippy.yml">
