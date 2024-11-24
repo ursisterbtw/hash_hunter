@@ -12,6 +12,7 @@
   - Supports customizable patterns including prefix, suffix, and regex patterns.
   - Provides options for enabling EIP-55 checksum and skipping confirmation prompts.
   - Displays entropy estimation and years to crack for generated addresses.
+  - Saves wallet information to files upon finding a match.
 
 - **Python Implementation (`main.py`)**:
   - Utilizes multithreading for concurrent address generation.
