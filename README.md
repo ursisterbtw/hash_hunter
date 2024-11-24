@@ -25,5 +25,34 @@
 
 To run the Rust implementation:
 
-```bash
+```rust
 cargo run --release
+```
+
+With additional parameters:
+
+```rust
+cargo run --release -- --start-pattern 123 --end-pattern abc --min-zeros 5
+```
+
+### Python
+
+To run the Python implementation:
+
+```python
+python main.py
+```
+
+With additional parameters:
+
+```python
+python main.py --start-pattern 123 --end-pattern abc --checksum
+```
+
+## Contributions
+
+Feel free to contribute by submitting issues or pull requests. Be careful when testing and ensure you do not use the generated keys on the main Ethereum network.
+
+## License
+
+This project is licensed under the MIT License.
