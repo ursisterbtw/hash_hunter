@@ -3,7 +3,7 @@
   <img src="./saturdaynight.gif" width="300" alt="saturdaynight">
 </div>
 
-`hash_hunter` is a simple Ethereum vanity address generator written in both Rust and Python. It is designed to be a proof of concept for generating Ethereum addresses with a specific prefix and suffix, as well as some other features.
+`hash_hunter` is an Ethereum vanity address generator written in both Rust and Python. It is designed to be a proof of concept for generating Ethereum addresses with a specific prefix and suffix, as well as some other features.
 
 🦀 `main.rs` 🦀 is designed to max out cpu, 🐍 `main.py` 🐍 is a little more considerate.
 
