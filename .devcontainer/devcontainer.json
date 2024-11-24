@@ -35,13 +35,17 @@
             ],
             "settings": {
                 "editor.formatOnSave": true,
-                "python.linting.enabled": true,
-                "python.linting.ruffEnabled": true,
-                "python.formatting.provider": "ruff",
-                "rust-analyzer.checkOnSave.command": "clippy",
-                "rust-analyzer.cargo.allFeatures": true,
-                "rust-analyzer.procMacro.enable": true,
-                "rust-analyzer.inlayHints.enable": true
+                "ruff.lint.enable": true,
+                "[python]": {
+                    "linting.enabled": true,
+                    "linting.ruffEnabled": true,
+                    "formatting.provider": "ruff",
+                    "linting.ruff.args": [
+                        "--config",
+                        ".ruff.toml"
+                    ],
+                    "linting.ruff.config": ".ruff.toml"
+                }
             }
         }
     },
