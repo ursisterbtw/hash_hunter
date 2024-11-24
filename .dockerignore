@@ -1,0 +1,10 @@
+.git
+target (Rust build artifacts)
+__pycache__
+*.pyc
+*.pyo
+.env
+node_modules
+*.log
+*.bak
+docker-compose*.yml

@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/devcontainers/base:ubuntu
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     curl \
     git \
@@ -13,8 +13,8 @@ RUN apt-get update && apt-get install -y \
     lldb \
     python3-pip \
     python3-venv \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+    libpq-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog
