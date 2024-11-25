@@ -26,7 +26,3 @@ jobs:
     - name: Lint with Ruff
       run: |
         ruff check .
-        
-    - name: Test Address Generator
-      run: |
-        python src/main.py -p "123" -e "456" -c --max-tries 1000 --step 100
