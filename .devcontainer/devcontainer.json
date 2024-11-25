@@ -5,22 +5,38 @@
     },
     "features": {
         "ghcr.io/devcontainers/features/rust:1": {
-            "version": "latest",
-            "profile": "minimal"
+            "version": "latest"
         },
         "ghcr.io/devcontainers/features/python:1": {
             "installTools": true,
-            "optimized": true,
+            "optimize": true,
+            "enableShared": true,
             "version": "latest"
         },
         "ghcr.io/devcontainers/features/node:1": {
-            "version": "lts"
+            "nodeGypDependencies": true,
+            "installYarnUsingApt": true,
+            "version": "lts",
+            "pnpmVersion": "latest",
+            "nvmVersion": "latest"
         },
         "ghcr.io/devcontainers/features/git:1": {
-            "version": "latest",
-            "ppa": true
+            "ppa": true,
+            "version": "latest"
         },
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "moby": true,
+            "azureDnsAutoDetection": true,
+            "installDockerBuildx": true,
+            "installDockerComposeSwitch": true,
+            "version": "latest",
+            "dockerDashComposeVersion": "latest"
+        },
+        "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+            "version": "latest",
+            "helm": "latest",
+            "minikube": "latest"
+        }
     },
     "customizations": {
         "vscode": {
