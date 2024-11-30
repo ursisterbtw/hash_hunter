@@ -23,6 +23,7 @@ app
 __pycache__
 secrets
 data/
+.history
 
 *.db
 *.log

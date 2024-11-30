@@ -45,7 +45,7 @@ def run_wallet_check():
             try:
                 with open(file_path, "r", encoding="utf-8") as file:
                     if filename.endswith(".json"):
-                        # Parse JSON file
+                        # parse JSON file
                         data = json.load(file)
                         if isinstance(data, dict):
                             wallet_addresses = [data.get("address")]
@@ -55,7 +55,7 @@ def run_wallet_check():
                             print(f"Unexpected JSON structure in {filename}")
                             continue
                     else:
-                        # Parse TXT file
+                        # parse TXT file
                         content = file.read().strip()
                         lines = content.split("\n")
                         wallet_addresses = [line.split("Address:")[1].strip() for line in lines if line.startswith("Address:")]

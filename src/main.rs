@@ -22,7 +22,7 @@ struct Args {
     start_pattern: String,
 
     // suffix of the eth address
-    #[arg(short = 'e', long, default_value = "69696969")]
+    #[arg(short = 'e', long, default_value = "69")]
     end_pattern: String,
 
     // enable EIP-55 checksum
@@ -125,7 +125,7 @@ fn main() {
                 let attempts = total_attempts.get("attempts").map(|a| *a).unwrap_or(0);
                 progress_bar.set_position(attempts);
 
-                // Add rate calculation
+                // add rate calculation
                 let rate = (attempts - last_attempts) as f64 / (log_interval as f64 / 1000.0);
                 println!("Rate: {:.2} attempts/sec, Total: {}", rate, attempts);
                 last_attempts = attempts;
@@ -287,7 +287,7 @@ fn main() {
 
         let mut log_writer = std::io::BufWriter::new(log_file);
 
-        // Log startup
+        // log startup
         writeln!(
             log_writer,
             "[{}] Starting hash_hunter with prefix: {}, suffix: {}",
@@ -298,7 +298,7 @@ fn main() {
         .expect("Failed to write to log");
         log_writer.flush().expect("Failed to flush log");
 
-        // When a match is found, log it
+        // when a match is found, log it
         writeln!(
             log_writer,
             "[{}] Found match! Address: {}, Attempts: {}",
@@ -309,7 +309,7 @@ fn main() {
         .expect("Failed to write to log");
         log_writer.flush().expect("Failed to flush log");
 
-        // Create a success marker file
+        // create a success marker file
         std::fs::write(
             "gen/SUCCESS",
             format!("Found address: {}\n", result.address),

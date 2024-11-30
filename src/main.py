@@ -9,7 +9,7 @@ from collections import defaultdict
 from eth_account import Account
 import os
 
-# Constants
+# constants
 PATTERN_FOUR_ZEROS = r"^0x[0-9a-fA-F]{4}0000[0-9a-fA-F]{36}$"
 PATTERN_TRIPLE_DIGITS = r"^0x[0-9a-fA-F]*[0-9]{3}[0-9a-fA-F]*$"
 PATTERN_ASCENDING = r"^0x[0-9a-fA-F]*(1234|2345|3456|4567|5678|6789)[0-9a-fA-F]*$"
@@ -138,7 +138,7 @@ def main():
         nonlocal total_attempts
 
         while not found.is_set():
-            # Generate a new Ethereum account
+            # generate a new Ethereum account
             account = Account.create()
             private_key = account._private_key.hex()
             address = account.address
@@ -190,7 +190,7 @@ def main():
         futures = [executor.submit(generate_address) for _ in range(10)]
 
         try:
-            # Wait for any of the futures to complete (which will never happen unless a match is found)
+            # wait for any of the futures to complete (which will never happen unless a match is found)
             for future in futures:
                 future.result()
         except KeyboardInterrupt:
