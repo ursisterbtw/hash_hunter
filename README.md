@@ -1,6 +1,6 @@
 # ☁️ hash_hunter ☁️
 
-![saturdaynight|150x100](./saturdaynight.gif)
+![saturdaynight|75x50](./saturdaynight.gif)
 
 [![Rust Clippy](https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust-clippy.yml)
 [![Rust](https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust.yml/badge.svg)](https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust.yml)
