@@ -1,6 +1,5 @@
-<p align="center">
-  <h1>☁️ hash_hunter ☁️</h1>
-</p>
+<h1 align="center">☁️ hash_hunter ☁️</h1>
+
 
 <p align="center">
   <img src="./saturdaynight.gif" alt="saturdaynight" width="300" />
