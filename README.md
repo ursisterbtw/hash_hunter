@@ -1,11 +1,15 @@
-# ☁️ hash_hunter ☁️
+<p align="center">
+  <h1>☁️ hash_hunter ☁️</h1>
+</p>
 
 <p align="center">
   <img src="./saturdaynight.gif" alt="saturdaynight" width="300" />
 </p>
 
-[![Rust Clippy](https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust-clippy.yml)
-[![Rust](https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust.yml/badge.svg)](https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust.yml)
+<p align="center">
+  <a href="https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust-clippy.yml"><img src="https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust-clippy.yml/badge.svg" alt="Rust Clippy"></a>
+  <a href="https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust.yml"><img src="https://github.com/ursisterbtw/hash_hunter/actions/workflows/rust.yml/badge.svg" alt="Rust"></a>
+</p>
 
 `hash_hunter` is an Ethereum vanity address generator written in both Rust and Python. It is designed to be a proof of concept for generating Ethereum addresses with a specific prefix and suffix, as w[...]
 
