@@ -5,7 +5,7 @@ services:
       context: .
     volumes:
       - ./gen:/usr/src/app/gen
-    command: hash_hunter -p 69 -e 69696969 -c -s 100000 -m 100000000000 -i 10000 -y
+    command: hash_hunter -p 0000000000 -c -s 100000 -m 100000000000 -i 10000 -y
     restart: unless-stopped
     deploy:
       resources:
