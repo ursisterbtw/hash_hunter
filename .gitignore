@@ -26,7 +26,7 @@ data/
 .history
 secrets
 .dockerrc
-
+.venv
 *.db
 *.log
 **/gen/*.json
