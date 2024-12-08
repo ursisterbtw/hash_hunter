@@ -4,16 +4,23 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-clap = { version = "4.5.20", features = ["derive"] }
-rand = "0.8"
+clap = { version = "4.5.23", features = ["derive"] }
+rand = "0.8.5"
 secp256k1 = { version = "0.30.0", features = ["rand"] }
-sha3 = "0.10"
+sha3 = "0.10.8"
 hex = "0.4.3"
 dashmap = "6.1.0"
 rayon = "1.10.0"
 num_cpus = "1.16.0"
-colored = "2.0.0"
-indicatif = "0.17.8"
-serde_json = "1.0.128"
-regex = "1.11.0"
+colored = "2.1.0"
+indicatif = "0.17.9"
+serde_json = "1.0.133"
+regex = "1.11.1"
 chrono = "0.4.38"
+
+[dev-dependencies]
+criterion = "0.5.1"
+test-case = "3.3.1"
+proptest = "1.5.0"
+mockall = "0.13.1"
+tokio-test = "0.4.4"
