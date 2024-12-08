@@ -25,6 +25,7 @@ secrets
 data/
 .history
 secrets
+.dockerrc
 
 *.db
 *.log
