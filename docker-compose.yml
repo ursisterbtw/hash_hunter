@@ -13,7 +13,7 @@ services:
           cpus: "7.5"
           memory: 8G
     healthcheck:
-      test: ["CMD", "supervisorctl", "status", "hash_hunter"]
+      test: [CMD, supervisorctl, status, hash_hunter]
       interval: 30s
       timeout: 10s
       retries: 3
