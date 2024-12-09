@@ -162,11 +162,9 @@ def main():
 
             if matches_custom or is_palindrome(
                 final_address[2:14]
-            ):  # Check palindrome without '0x'
-                rarity_score = calculate_rarity_score(
+            ):  # check palindrome without '0x'                rarity_score = calculate_rarity_score(
                     final_address[2:]
-                )  # Calculate rarity without '0x'
-                logger.success("\n🎉 New wallet found!")
+                )  # calculate rarity without '0x'                logger.success("\n🎉 New wallet found!")
                 logger.success(f"Address: {final_address}")
                 logger.success(f"Private Key: {private_key}")
                 logger.success(f"Attempts: {total_attempts}")

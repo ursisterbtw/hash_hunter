@@ -144,8 +144,7 @@ fn main() {
             let found = Arc::clone(&found);
             let result_map = Arc::clone(&result_map);
             let total_attempts = Arc::clone(&total_attempts);
-            let regex_pattern = regex_pattern.clone(); // Clone the regex pattern for each thread
-
+            let regex_pattern = regex_pattern.clone(); // clone the regex pattern for each thread
             s.spawn(move |_| {
                 let secp = Secp256k1::new();
                 let mut rng = OsRng;

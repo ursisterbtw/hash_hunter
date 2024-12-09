@@ -13,14 +13,10 @@ from src.main import (
 
 def test_rarity_score():
     test_cases = [
-        ("0x0000000000000000", 0.125),  # All zeros should have low score
-        ("0x1234567890abcdef", 1.0),  # All different chars should have high score
-        ("0xaaaaaaaaaaaaaaaa", 0.125),  # All same chars should have low score
-    ]
+        ("0x0000000000000000", 0.125),  # all zeros should have low score        ("0x1234567890abcdef", 1.0),  # all different chars should have high score        ("0xaaaaaaaaaaaaaaaa", 0.125),  # all same chars should have low score    ]
 
     for address, expected_score in test_cases:
-        score = calculate_rarity_score(address[2:])  # Remove 0x prefix
-        assert abs(score - expected_score) < 0.01, f"Failed for {address}"
+        score = calculate_rarity_score(address[2:])  # remove 0x prefix        assert abs(score - expected_score) < 0.01, f"Failed for {address}"
 
 
 def test_palindrome_check():
@@ -84,8 +80,7 @@ def test_address_generation_performance(benchmark, num_attempts):
             Account.create()
 
     result = benchmark(generate_addresses)
-    assert result.stats.total_time < num_attempts * 0.1  # Expected time per address
-
+    assert result.stats.total_time < num_attempts * 0.1  # expected time per address
 
 def test_concurrent_generation():
     import threading

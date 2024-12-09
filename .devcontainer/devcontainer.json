@@ -9,9 +9,7 @@
         },
         "ghcr.io/devcontainers/features/python:1": {
             "installTools": true,
-            "optimize": true,
-            "enableShared": true,
-            "version": "latest"
+            "version": "3.12.0"
         },
         "ghcr.io/devcontainers/features/node:1": {
             "nodeGypDependencies": true,
@@ -19,18 +17,6 @@
             "version": "lts",
             "pnpmVersion": "latest",
             "nvmVersion": "latest"
-        },
-        "ghcr.io/devcontainers/features/git:1": {
-            "ppa": true,
-            "version": "latest"
-        },
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {
-            "moby": true,
-            "azureDnsAutoDetection": true,
-            "installDockerBuildx": true,
-            "installDockerComposeSwitch": true,
-            "version": "latest",
-            "dockerDashComposeVersion": "latest"
         },
         "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
             "version": "latest",
@@ -75,6 +61,8 @@
     "runArgs": [
         "--cap-add=SYS_PTRACE",
         "--security-opt",
-        "seccomp=unconfined"
+        "seccomp=unconfined",
+        "-v",
+        "/var/run/docker.sock:/var/run/docker.sock"
     ]
 }

@@ -64,8 +64,7 @@ def process_directory(directory):
             if file.endswith(".rs"):
                 file_path = os.path.join(root, file)
                 lowercase_comment_leading_letter(file_path)
-            elif file.endswith(".py"):  # Only process Python files
-                file_path = os.path.join(root, file)
+            elif file.endswith(".py"):  # only process Python files                file_path = os.path.join(root, file)
                 lint_and_uncapitalize_comments(file_path)
 
 
