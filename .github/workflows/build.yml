@@ -1,7 +1,14 @@
-name: Docker Build Cloud
+name: hash_hunter_build
 
 on:
   push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions: read-all
 
 jobs:
   docker:
@@ -15,15 +22,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          version: "lab:latest"
+          version: lab:latest
           driver: cloud
-          endpoint: "${{ vars.DOCKER_USER }}/sister1"
+          endpoint: "${{ vars.DOCKER_USER }}/ursister"
           install: true
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          tags: "${{ vars.DOCKER_USER }}/docker-build-cloud-demo:latest"
+          tags: "${{ vars.DOCKER_USER }}/ursister:latest"
           # For pull requests, export results to the build cache.
           # Otherwise, push to a registry.
           outputs: ${{ github.event_name == 'pull_request' && 'type=cacheonly' || 'type=registry' }}
-            
