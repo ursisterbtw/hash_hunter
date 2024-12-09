@@ -2,6 +2,7 @@
 .env
 run.py
 *.txt
+!requirements.txt
 *.json
 *.c
 *.cpp

@@ -1,13 +1,14 @@
-from loguru import logger
 import argparse
 import hashlib
+import os
 import re
 import threading
 import time
-from concurrent.futures import ThreadPoolExecutor
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
+
 from eth_account import Account
-import os
+from loguru import logger
 
 # constants
 PATTERN_FOUR_ZEROS = r"^0x[0-9a-fA-F]{4}0000[0-9a-fA-F]{36}$"
