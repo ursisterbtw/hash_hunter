@@ -43,7 +43,7 @@ def test_checksum_address():
         assert result == expected, f"Failed for {input_addr}"
 
 def test_address_verification():
-    # Create a test account
+    # create a test account
     account = Account.create()
     address = account.address
     private_key = account._private_key.hex()
