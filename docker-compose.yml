@@ -10,12 +10,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "7.5"
-          memory: 8G
+          cpus: "12"
+          memory: 32G
     healthcheck:
       test: [CMD, supervisorctl, status, hash_hunter]
       interval: 30s
       timeout: 10s
       retries: 3
-    ports:
-      - 8080:8080

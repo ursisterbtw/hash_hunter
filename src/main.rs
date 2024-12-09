@@ -180,8 +180,7 @@ fn main() {
                         && final_address.ends_with(&end_pattern)
                         && zero_count >= min_zeros
                         && regex_pattern
-                            .as_ref()
-                            .map_or(true, |re| re.is_match(&final_address))
+                            .as_ref().is_none_or(|re| re.is_match(&final_address))
                     {
                         // found a matching address
                         let address_with_prefix = format!("0x{}", final_address);
