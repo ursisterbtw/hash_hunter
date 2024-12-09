@@ -32,5 +32,6 @@ secrets
 *.log
 **/gen/*.json
 .build-metrics.db
+.trunk
 # Temp Ignore
 
