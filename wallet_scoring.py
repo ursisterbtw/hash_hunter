@@ -1,5 +1,6 @@
-import os
 import json
+import os
+
 import matplotlib.pyplot as plt
 
 
@@ -50,7 +51,11 @@ def run_wallet_check():
                         if isinstance(data, dict):
                             wallet_addresses = [data.get("address")]
                         elif isinstance(data, list):
-                            wallet_addresses = [item.get("address") for item in data if isinstance(item, dict)]
+                            wallet_addresses = [
+                                item.get("address")
+                                for item in data
+                                if isinstance(item, dict)
+                            ]
                         else:
                             print(f"Unexpected JSON structure in {filename}")
                             continue
@@ -58,19 +63,27 @@ def run_wallet_check():
                         # parse TXT file
                         content = file.read().strip()
                         lines = content.split("\n")
-                        wallet_addresses = [line.split("Address:")[1].strip() for line in lines if line.startswith("Address:")]
+                        wallet_addresses = [
+                            line.split("Address:")[1].strip()
+                            for line in lines
+                            if line.startswith("Address:")
+                        ]
 
                     for wallet_address in wallet_addresses:
                         if wallet_address:
                             try:
-                                score, total_zeroes, leading_zeroes = calculate_score(wallet_address)
+                                score, total_zeroes, leading_zeroes = calculate_score(
+                                    wallet_address
+                                )
                                 print(
                                     f"Wallet: {wallet_address}, "
                                     f"Total Zeroes: {total_zeroes}, "
                                     f"Leading Zeroes: {leading_zeroes}, "
                                     f"Score: {score:.2f}%"
                                 )
-                                matched_wallets.append({"address": wallet_address, "score": score})
+                                matched_wallets.append(
+                                    {"address": wallet_address, "score": score}
+                                )
                             except ValueError as e:
                                 print(f"Error processing address: {e}")
 

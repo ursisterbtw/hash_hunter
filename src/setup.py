@@ -1,7 +1,8 @@
 import os
-from setuptools import setup, Extension
-from Cython.Build import cythonize
+
 import numpy as np
+from Cython.Build import cythonize
+from setuptools import Extension, setup
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 

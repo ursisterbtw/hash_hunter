@@ -17,7 +17,11 @@ def lint_and_uncapitalize_comments(file_path):
                 # find the comment text after the `#`
                 comment = stripped_line[1:].lstrip()
                 # check if it starts with a capital letter, but ignore "SAFETY:" comments
-                if comment and comment[0].isupper() and not comment.lstrip().startswith("SAFETY:"):
+                if (
+                    comment
+                    and comment[0].isupper()
+                    and not comment.lstrip().startswith("SAFETY:")
+                ):
                     # replace the line with the uncapitalized comment
                     new_comment = comment[0].lower() + comment[1:]
                     line = line.replace(comment, new_comment, 1)
@@ -43,7 +47,11 @@ def lowercase_comment_leading_letter(file_path):
                     continue
                 match = re.match(r"^\s*//+\s*([A-Z])", line)
                 if match:
-                    line = re.sub(r"^(\s*//+\s*)([A-Z])", lambda m: m.group(1) + m.group(2).lower(), line)
+                    line = re.sub(
+                        r"^(\s*//+\s*)([A-Z])",
+                        lambda m: m.group(1) + m.group(2).lower(),
+                        line,
+                    )
                 file.write(line)
         print(f"Processed: {file_path}")
     except Exception as e:

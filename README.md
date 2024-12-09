@@ -11,6 +11,7 @@
 ## Features
 
 - **Rust Implementation (`main.rs`)**:
+
   - Maximize CPU utilization for faster address generation.
   - Supports customizable patterns including prefix, suffix, and regex patterns.
   - Provides options for enabling EIP-55 checksum and skipping confirmation prompts.
