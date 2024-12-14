@@ -9,6 +9,7 @@ tokio = { version = "1.42.0", features = ["full"] }
 dotenv = "0.15.0"
 rand = "0.8.5"
 ethers = "2.0.14"
+indicatif = "0.17.9"
 
 [[bin]]
 name = "salter"
