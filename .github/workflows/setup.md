@@ -66,7 +66,7 @@ Install Redis: Alternatively, install on one of your instances.
 Update Your Application
 Modify main.rs to report progress or coordinate via Redis:
 
-```
+```sh
 // Add Redis dependency
 [dependencies]
 redis = "0.21.5"
