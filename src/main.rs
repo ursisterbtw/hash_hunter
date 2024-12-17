@@ -9,8 +9,8 @@ use secp256k1::{PublicKey, Secp256k1, SecretKey};
 use sha3::{Digest, Keccak256};
 use std::fs::OpenOptions;
 use std::io::{self, Write};
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
 // eth addy gen in rust, zooms
@@ -179,21 +179,19 @@ fn main() {
                         && final_address.ends_with(&end_pattern)
                         && zero_count >= min_zeros
                         && regex_pattern
-                            .as_ref().is_none_or(|re| re.is_match(&final_address))
+                            .as_ref()
+                            .is_none_or(|re| re.is_match(&final_address))
                     {
                         // found a matching address
                         let address_with_prefix = format!("0x{}", final_address);
                         let priv_key_hex = hex::encode(secret_key.as_ref());
 
                         // insert the result
-                        result_map.insert(
-                            "result",
-                            VanityResult {
-                                address: address_with_prefix.clone(),
-                                priv_key: priv_key_hex.clone(),
-                                attempts: total_attempts.get("attempts").map(|a| *a).unwrap_or(0),
-                            },
-                        );
+                        result_map.insert("result", VanityResult {
+                            address: address_with_prefix.clone(),
+                            priv_key: priv_key_hex.clone(),
+                            attempts: total_attempts.get("attempts").map(|a| *a).unwrap_or(0),
+                        });
 
                         // signal other threads to stop
                         found.store(true, Ordering::Relaxed);
