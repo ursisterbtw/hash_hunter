@@ -45,8 +45,7 @@ def lowercase_comment_leading_letter(file_path):
                 if "SAFETY:" in line:
                     file.write(line)
                     continue
-                match = re.match(r"^\s*//+\s*([A-Z])", line)
-                if match:
+                if re.match(r"^\s*//+\s*([A-Z])", line):
                     line = re.sub(
                         r"^(\s*//+\s*)([A-Z])",
                         lambda m: m.group(1) + m.group(2).lower(),

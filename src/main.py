@@ -66,9 +66,7 @@ def calculate_rarity_score(address):
     max_count = max(char_counts.values(), default=0)
     repetition_factor = max_count / len(address)
 
-    # calculate rarity score (lower is rarer)
-    rarity_score = (unique_chars / 16.0) * (1.0 + repetition_factor)
-    return rarity_score
+    return (unique_chars / 16.0) * (1.0 + repetition_factor)
 
 
 def is_palindrome(s):
@@ -162,9 +160,11 @@ def main():
 
             if matches_custom or is_palindrome(
                 final_address[2:14]
-            ):  # check palindrome without '0x'                rarity_score = calculate_rarity_score(
+            ):  # check palindrome without '0x'
+                rarity_score = calculate_rarity_score(
                     final_address[2:]
-                )  # calculate rarity without '0x'                logger.success("\n🎉 New wallet found!")
+                )  # calculate rarity without '0x'
+                logger.success("\n🎉 New wallet found!")
                 logger.success(f"Address: {final_address}")
                 logger.success(f"Private Key: {private_key}")
                 logger.success(f"Attempts: {total_attempts}")
