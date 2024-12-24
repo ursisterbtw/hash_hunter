@@ -1,5 +1,5 @@
 [package]
-name = "salter"
+name = "salty_sailor"
 version = "0.1.0"
 edition = "2024"
 
@@ -12,5 +12,5 @@ ethers = "2.0.14"
 indicatif = "0.17.9"
 
 [[bin]]
-name = "salter"
+name = "salty_sailor"
 path = "src/main.rs"

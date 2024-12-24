@@ -72,15 +72,15 @@ COPY --from=rust-builder /usr/local/rustup /usr/local/rustup
 COPY --from=python-builder /usr/bin/python3 /usr/bin/python3
 COPY --from=python-builder /usr/bin/pip3 /usr/bin/pip3
 COPY --from=python-builder /usr/lib/python3 /usr/lib/python3
-COPY --from=python-builder /usr/lib/python3.9 /usr/lib/python3.9
-COPY --from=python-builder /usr/local/lib/python3.9 /usr/local/lib/python3.9
+COPY --from=python-builder /usr/lib/python3.13 /usr/lib/python3.13
+COPY --from=python-builder /usr/local/lib/python3.13 /usr/local/lib/python3.13
 COPY --from=python-builder /usr/lib/python3/dist-packages /usr/lib/python3/dist-packages
-COPY --from=python-builder /usr/local/lib/python3.9/dist-packages /usr/local/lib/python3.9/dist-packages
+COPY --from=python-builder /usr/local/lib/python3.13/dist-packages /usr/local/lib/python3.13/dist-packages
 # Set environment variables
 ENV RUSTUP_HOME=/usr/local/rustup \
    CARGO_HOME=/usr/local/cargo \
    PATH=/usr/local/cargo/bin:$PATH \
-   PYTHONPATH=/usr/lib/python3.9:/usr/local/lib/python3.9:/usr/lib/python3/dist-packages:/usr/local/lib/python3.9/dist-packages \
+   PYTHONPATH=/usr/lib/python3.13:/usr/local/lib/python3.13:/usr/lib/python3/dist-packages:/usr/local/lib/python3.13/dist-packages \
    LANG=C.UTF-8
 # Verify installations
 RUN python3 --version && \
