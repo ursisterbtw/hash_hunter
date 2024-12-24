@@ -1,68 +1,43 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/rust
 {
-    "name": "Rust + Python Blockchain Dev Environment",
-    "build": {
-        "dockerfile": "Dockerfile"
-    },
-    "features": {
-        "ghcr.io/devcontainers/features/rust:1": {
-            "version": "latest"
-        },
-        "ghcr.io/devcontainers/features/python:1": {
-            "installTools": true,
-            "version": "3.12.0"
-        },
-        "ghcr.io/devcontainers/features/node:1": {
-            "nodeGypDependencies": true,
-            "installYarnUsingApt": true,
-            "version": "lts",
-            "pnpmVersion": "latest",
-            "nvmVersion": "latest"
-        },
-        "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
-            "version": "latest",
-            "helm": "latest",
-            "minikube": "latest"
-        }
-    },
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "rust-lang.rust-analyzer",
-                "serayuzgur.crates",
-                "vadimcn.vscode-lldb",
-                "ms-python.python",
-                "ms-python.vscode-pylance",
-                "ms-toolsai.jupyter",
-                "JuanBlanco.solidity"
-            ],
-            "settings": {
-                "editor.formatOnSave": true,
-                "ruff.lint.enable": true,
-                "[python]": {
-                    "linting.enabled": true,
-                    "linting.ruffEnabled": true,
-                    "formatting.provider": "ruff",
-                    "linting.ruff.args": [
-                        "--config",
-                        ".ruff.toml"
-                    ],
-                    "linting.ruff.config": ".ruff.toml"
-                }
-            }
-        }
-    },
-    "postCreateCommand": "cargo build --release && cargo run --release",
-    "remoteUser": "vscode",
-    "hostRequirements": {
-        "memory": "16gb",
-        "cpus": 4
-    },
-    "privileged": true,
-    "runArgs": [
-        "--cap-add=SYS_PTRACE",
-        "--security-opt",
-        "seccomp=unconfined",
-        "-v",
-        "/var/run/docker.sock:/var/run/docker.sock"
-    ]
+	"name": "Python/Rust Development",
+	// Using custom Dockerfile instead of pre-built image
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "."
+	},
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "pip install -r requirements.txt && pip install -r .devcontainer/requirements.txt && rustup component add rustfmt clippy && pre-commit install",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"rust-lang.rust-analyzer",
+				"tamasfe.even-better-toml",
+				"github.copilot",
+				"ms-python.black-formatter",
+				"ms-python.isort"
+			],
+			"settings": {
+				"python.formatting.provider": "black",
+				"python.linting.enabled": true,
+				"python.linting.flake8Enabled": true,
+				"[python]": {
+					"editor.formatOnSave": true,
+					"editor.codeActionsOnSave": {
+						"source.organizeImports": "always"
+					}
+				},
+				"[rust]": {
+					"editor.formatOnSave": true
+				}
+			}
+		}
+	},
+	"remoteUser": "root"
 }

@@ -11,7 +11,7 @@ services:
       resources:
         limits:
           cpus: "12"
-          memory: 32G
+          memory: 15.5G
     healthcheck:
       test: [CMD, supervisorctl, status, hash_hunter]
       interval: 30s

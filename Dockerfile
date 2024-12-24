@@ -1,4 +1,4 @@
-FROM rust:1.82 AS builder
+FROM rust:1.85 AS builder
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 WORKDIR /usr/src/app
 COPY . .
