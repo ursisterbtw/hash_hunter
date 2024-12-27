@@ -1,5 +1,10 @@
-FROM rust:1.85 AS builder
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+FROM rustlang/rust:nightly-alpine AS builder
+RUN apk add --no-cache \
+    musl-dev \
+    gcc \
+    libc-dev \
+    make
+RUN addgroup -S appuser && adduser -S -G appuser appuser
 WORKDIR /usr/src/app
 COPY . .
 RUN cargo build --release && \

@@ -1,43 +1,43 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/rust
+// README at: https://github.com/devcontainers/templates/tree/main/src/rust-postgres
 {
-	"name": "Python/Rust Development",
-	// Using custom Dockerfile instead of pre-built image
-	"build": {
-		"dockerfile": "Dockerfile",
-		"context": "."
-	},
+	"name": "Rust and PostgreSQL",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+			"moby": true,
+			"installDockerBuildx": true,
+			"installDockerComposeSwitch": true,
+			"version": "latest",
+			"dockerDashComposeVersion": "v2"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"nodeGypDependencies": true,
+			"installYarnUsingApt": true,
+			"version": "lts",
+			"pnpmVersion": "latest",
+			"nvmVersion": "latest"
+		},
+		"ghcr.io/devcontainers/features/python:1": {
+			"installTools": true,
+			"version": "latest"
+		}
+	}
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [5432],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip install -r requirements.txt && pip install -r .devcontainer/requirements.txt && rustup component add rustfmt clippy && pre-commit install",
+	// "postCreateCommand": "rustc --version",
 
 	// Configure tool-specific properties.
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"ms-python.python",
-				"ms-python.vscode-pylance",
-				"rust-lang.rust-analyzer",
-				"tamasfe.even-better-toml",
-				"github.copilot",
-				"ms-python.black-formatter",
-				"ms-python.isort"
-			],
-			"settings": {
-				"python.formatting.provider": "black",
-				"python.linting.enabled": true,
-				"python.linting.flake8Enabled": true,
-				"[python]": {
-					"editor.formatOnSave": true,
-					"editor.codeActionsOnSave": {
-						"source.organizeImports": "always"
-					}
-				},
-				"[rust]": {
-					"editor.formatOnSave": true
-				}
-			}
-		}
-	},
-	"remoteUser": "root"
+	// "customizations": {},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
 }
