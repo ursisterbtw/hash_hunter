@@ -4,22 +4,6 @@ services:
     volumes:
       - ./gen:/app/gen
     command: -p 000000 -c -s 100000 -m 100000000 -i 10000 -y
-
-jobs:
-  build-and-run:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - name: Build
-        run: cargo build --release
-      - name: Run Hash Hunter
-        run: ./target/release/hash_hunter -p 000000 -c -s 100000 -m 100000000 -i 10000 -y
-      - name: Upload Results
-        uses: actions/upload-artifact@v3
-        with:
-          name: generated-addresses
-          path: ./gen/
+    deploy:
+      replicas: 4
+    restart: unless-stopped

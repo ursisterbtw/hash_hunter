@@ -33,8 +33,7 @@ async fn generate_salted_address(stats: web::Data<Arc<Mutex<SearchStats>>>) -> i
         let mut stats = stats.lock().await;
         stats.attempts += 1;
 
-        // Update progress every 10000 attempts
-        if stats.attempts % 10000 == 0 {
+        // update progress every 10000 attempts        if stats.attempts % 10000 == 0 {
             let rate = stats.attempts as f64 / stats.start_time.elapsed().as_secs_f64();
             pb.set_message(format!(
                 "Attempts: {} | Rate: {:.0} addr/s | Elapsed: {:?}",
@@ -53,11 +52,9 @@ async fn generate_salted_address(stats: web::Data<Arc<Mutex<SearchStats>>>) -> i
         if leading_zeros >= target_zeros {
             let private_key = wallet.signer().to_bytes().to_vec();
 
-            // Create results directory if it doesn't exist
-            fs::create_dir_all("results").unwrap_or_default();
+            // create results directory if it doesn't exist            fs::create_dir_all("results").unwrap_or_default();
 
-            // Save to file
-            let filename = format!("results/{}.txt", address);
+            // save to file            let filename = format!("results/{}.txt", address);
             let mut file = OpenOptions::new()
                 .write(true)
                 .create(true)

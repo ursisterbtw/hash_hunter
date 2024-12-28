@@ -1,0 +1,16 @@
+[build]
+builder = "rust"
+buildCommand = "cargo build --release"
+
+[deploy]
+startCommand = "./target/release/hash_hunter -p 000000000000 -c -s 100000 -m 100000000 -i 10000 -y"
+healthcheckPath = "/health"
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 10
+
+[deploy.env]
+RUST_LOG = "info"
+
+[[services]]
+name = "hash-hunter"
+replicas = 4
