@@ -1,6 +1,6 @@
 [build]
 builder = "dockerfile"
-dockerfilePath = "Dockerfile"
+dockerfilePath = "cloud_methods/railway/Dockerfile.railway"
 
 [[services]]
 name = "hunter-1"
