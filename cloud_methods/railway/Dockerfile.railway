@@ -24,8 +24,9 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 RUN mkdir -p /usr/src/app/health && \
     echo "OK" > /usr/src/app/health/index.html
 
+# Copy the binary and supervisor config
 COPY --from=builder /usr/src/app/target/release/hash_hunter /usr/local/bin/hash_hunter
-COPY supervisord.railway.conf /etc/supervisor/conf.d/supervisord.conf
+COPY cloud_methods/railway/supervisord.railway.conf /etc/supervisor/conf.d/supervisord.conf
 WORKDIR /usr/src/app
 
 # Create necessary directories and set permissions
