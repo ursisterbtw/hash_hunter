@@ -17,7 +17,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Create a health check file
+# Create a non-root user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Create health check file
 RUN mkdir -p /usr/src/app/health && \
     echo "OK" > /usr/src/app/health/index.html
 
@@ -25,13 +28,15 @@ COPY --from=builder /usr/src/app/target/release/hash_hunter /usr/local/bin/hash_
 COPY supervisord.railway.conf /etc/supervisor/conf.d/supervisord.conf
 WORKDIR /usr/src/app
 
-# Ensure proper permissions
+# Create necessary directories and set permissions
 RUN mkdir -p /usr/src/app/gen && \
+    chown -R appuser:appuser /usr/src/app && \
     chmod -R 755 /usr/src/app
+
+USER appuser
 
 EXPOSE 8080
 
-# More robust healthcheck
 HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8080/health/index.html || exit 1
 

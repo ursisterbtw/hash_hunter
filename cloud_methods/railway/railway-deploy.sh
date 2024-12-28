@@ -8,14 +8,19 @@ fi
 # Login to Railway (if not already logged in)
 railway login
 
-# Initialize Railway project
-railway init hash-hunter
+# Initialize Railway project if not already initialized
+if [ ! -f railway.toml ]; then
+    railway init hash-hunter
+fi
 
 # Link to existing project
 railway link
 
 # Deploy all services
-railway up
+railway up --detach
 
 # Monitor deployments
 railway status
+
+# Watch logs
+railway logs
