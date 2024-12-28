@@ -1,5 +1,55 @@
+# Version control
 .git
-target
-__pycache__
+.gitignore
+.gitattributes
+
+# Build artifacts
+target/
+__pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.so
+*.dylib
+*.dll
+*.class
+build/
+dist/
+
+# Environment and configuration
 .env
+.env.*
+*.env
+.python-version
+.cargo/config
+.rustup
+.venv/
+venv/
+ENV/
+
+# Development tools
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+.history/
+
+# Documentation and tests
+docs/
+tests/
+*.md
+!README.md
+
+# Temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+
+# Project specific
+gen/
+keepers/
+scores/
+.build-metrics.db
+.trunk/
