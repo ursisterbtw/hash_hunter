@@ -7,5 +7,3 @@ COPY Cargo.toml Cargo.lock ./
 RUN cargo build --release
 
 COPY . .
-
-CMD ["cargo build"]
