@@ -2,10 +2,31 @@
 builder = "dockerfile"
 dockerfilePath = "Dockerfile"
 
-[deploy]
-startCommand = "./hash_hunter -p 000000000000 -c -s 100000 -m 100000000000 -i 10000 -y"
-restartPolicyType = "on-failure"
-numReplicas = 4
+[[services]]
+name = "hunter-1"
+replicas = 1
+command = "hash_hunter -p 000000000000 -c -s 100000 -m 100000000000 -i 10000 -y"
 
-[service]
-internal_port = 6379
+[[services]]
+name = "hunter-2"
+replicas = 1
+command = "hash_hunter -p 000000000000 -c -s 100000 -m 100000000000 -i 10000 -y"
+
+[[services]]
+name = "hunter-3"
+replicas = 1
+command = "hash_hunter -p 000000000000 -c -s 100000 -m 100000000000 -i 10000 -y"
+
+[[services]]
+name = "hunter-4"
+replicas = 1
+command = "hash_hunter -p 000000000000 -c -s 100000 -m 100000000000 -i 10000 -y"
+
+[[services]]
+name = "hunter-5"
+replicas = 1
+command = "hash_hunter -p 000000000000 -c -s 100000 -m 100000000000 -i 10000 -y"
+
+[deploy]
+strategy = "rolling"
+healthcheck = true
