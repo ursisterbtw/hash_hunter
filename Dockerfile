@@ -11,7 +11,7 @@ RUN cargo build --release && \
     chown -R appuser:appuser /usr/src/app
 USER appuser
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl3 \
     supervisor && \
