@@ -1,5 +1,5 @@
 .git
-target (Rust build artifacts)
+target
 __pycache__
 *.pyc
 *.pyo
@@ -8,3 +8,8 @@ node_modules
 *.log
 *.bak
 docker-compose*.yml
+.vscode
+.idea
+*.db
+.history
+.trunk
