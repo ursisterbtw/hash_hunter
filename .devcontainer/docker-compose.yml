@@ -1,37 +1,32 @@
 version: '3.8'
-
-volumes:
-  postgres-data:
-
 services:
-  app:
+  hash_hunter:
     build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-        # Ensure that the variables in .env match the same variables in devcontainer.json
-        - .env
-
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
     volumes:
-      - ../..:/workspaces:cached
-
-    # Overrides default command so things don't shut down after the process ends.
+      - ..:/workspaces/hash_hunter:cached
+      - ~/.ssh:/home/vscode/.ssh:ro
     command: sleep infinity
-
-    # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
-    network_mode: service:db
-
-    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: "12"
+          memory: 15.5G
 
   db:
     image: postgres:14.1
     restart: unless-stopped
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    env_file:
-        # Ensure that the variables in .env match the same variables in devcontainer.json
-        - .env
+    environment:
+      POSTGRES_USER: hunter
+      POSTGRES_PASSWORD: hunter
+      POSTGRES_DB: hunter_db
 
-    # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
+volumes:
+  postgres-data:

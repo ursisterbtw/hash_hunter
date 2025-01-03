@@ -3,7 +3,7 @@
 {
 	"name": "Rust and PostgreSQL",
 	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
+	"service": "hash_hunter",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"features": {
 		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
@@ -11,7 +11,8 @@
 			"installDockerBuildx": true,
 			"installDockerComposeSwitch": true,
 			"version": "latest",
-			"dockerDashComposeVersion": "v2"
+			"dockerDashComposeVersion": "v2",
+			"dockerDefaultBuildKitConfig": true
 		},
 		"ghcr.io/devcontainers/features/node:1": {
 			"nodeGypDependencies": true,
@@ -24,20 +25,9 @@
 			"installTools": true,
 			"version": "latest"
 		}
-	}
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [5432],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "rustc --version",
-
-	// Configure tool-specific properties.
-	// "customizations": {},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	},
+	"remoteEnv": {
+		"DOCKER_BUILDKIT": "1"
+	},
+	"remoteUser": "vscode"
 }

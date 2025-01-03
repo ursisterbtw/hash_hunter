@@ -150,6 +150,13 @@ fn main() {
                 let mut rng = OsRng;
                 let mut local_attempts = 0u64;
 
+                let mut warmup = vec![];
+                for _ in 0..1000 {
+                    let sk = SecretKey::new(&mut rng);
+                    warmup.push(sk);
+                }
+                warmup.clear(); // Clear but keep capacity
+
                 while !found.load(Ordering::Relaxed)
                     && total_attempts.get("attempts").map_or(0, |a| *a) < max_tries
                 {
