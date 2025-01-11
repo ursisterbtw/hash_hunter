@@ -3,12 +3,9 @@ import re
 import pytest
 from eth_account import Account
 
-from src.main import (
-    calculate_rarity_score,
-    is_palindrome,
-    to_checksum_address,
-    verify_address,
-)
+from src.main import (calculate_rarity_score, is_palindrome,
+                      to_checksum_address, verify_address)
+
 
 def test_rarity_score():
     test_cases = [

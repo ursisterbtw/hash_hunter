@@ -1,19 +1,20 @@
 # cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True
 
-from libc.stdlib cimport malloc, free
+from cpython.mem cimport PyMem_Free, PyMem_Malloc
+from libc.stdlib cimport free, malloc
 from libc.string cimport strcpy
-from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
+import argparse
+import json
+import multiprocessing
 import os
 import sys
-import json
-import argparse
-import multiprocessing
-from multiprocessing import Value, Lock, Process, Queue, Manager
+from multiprocessing import Lock, Manager, Process, Queue, Value
 from time import sleep, time
 
 from eth_account import Account
 from web3 import Web3
+
 
 cdef struct AddressInfo:
     char* address

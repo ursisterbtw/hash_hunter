@@ -11,6 +11,7 @@ import oci
 from google.cloud import run_v2
 from loguru import logger
 
+
 @dataclass
 class CloudConfig:
     provider: str
