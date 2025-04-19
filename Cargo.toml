@@ -17,7 +17,6 @@ indicatif = "0.17.9"
 serde_json = "1.0.135"
 regex = "1.11.1"
 chrono = "0.4.39"
-bacon = "3.7.0"
 
 [dev-dependencies]
 criterion = "0.5.1"
