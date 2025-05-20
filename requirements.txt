@@ -39,7 +39,7 @@ python-dateutil==2.9.0.post0
 regex==2024.11.6
 rlp==4.0.1
 ruff==0.8.2
-setuptools==75.6.0
+setuptools==78.1.1
 six==1.17.0
 tomlkit==0.13.2
 toolz==1.0.0
