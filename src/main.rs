@@ -194,11 +194,14 @@ fn main() {
                         let priv_key_hex = hex::encode(secret_key.as_ref());
 
                         // insert the result
-                        result_map.insert("result", VanityResult {
-                            address: address_with_prefix.clone(),
-                            priv_key: priv_key_hex.clone(),
-                            attempts: total_attempts.get("attempts").map(|a| *a).unwrap_or(0),
-                        });
+                        result_map.insert(
+                            "result",
+                            VanityResult {
+                                address: address_with_prefix.clone(),
+                                priv_key: priv_key_hex.clone(),
+                                attempts: total_attempts.get("attempts").map(|a| *a).unwrap_or(0),
+                            },
+                        );
 
                         // signal other threads to stop
                         found.store(true, Ordering::Relaxed);
