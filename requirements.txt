@@ -15,7 +15,7 @@ eth-rlp==2.1.0
 eth-typing==5.0.1
 eth-utils==5.1.0
 eth_abi==5.1.0
-fonttools==4.55.2
+fonttools==4.61.0
 hexbytes==1.2.1
 iniconfig==2.0.0
 isort==5.13.2
